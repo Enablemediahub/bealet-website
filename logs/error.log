@@ -1,0 +1,294 @@
+[2026-04-20 10:58:35] Query Execution Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'p.image' in 'field list'
+[2026-04-21 15:50:07] Query Execution Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'image' in 'field list'
+[2026-04-24 14:42:21] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:42:25] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:42:25] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:43:13] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:43:13] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:43:30] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:46:13] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:46:41] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:48:11] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:51:30] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:51:45] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:53:43] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:53:47] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:59:42] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:59:53] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 14:59:58] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:00:03] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:00:18] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:00:26] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:00:30] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:02:50] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:02:55] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:03:19] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:03:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:03:25] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:03:27] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:03:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:03:47] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:03:50] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:03:50] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:06] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:08] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:14] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:28] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:28] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:35] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:35] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:36] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:40] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:41] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:04:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:04:42] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:09:55] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:05] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:10:05] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:07] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:10:07] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:08] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:10:08] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:09] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:10:09] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:35] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:10:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:10:49] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:11:26] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:11:29] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:16:38] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:16:43] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:16:43] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:16:52] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:16:52] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:16:52] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:16:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:16:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:16:58] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:22:12] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:22:12] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:23:06] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:23:06] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:23:14] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:23:14] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:23:17] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:23:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:23:19] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:24:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:24:41] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:24:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:24:42] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:26:55] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:26:55] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:06] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:30:06] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:22] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:25] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:25] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:31] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:31] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 15:30:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 15:30:34] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:45:04] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:45:14] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:48:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:48:56] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:49:15] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:49:15] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:49:15] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:49:18] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:49:18] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:49:18] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:49:32] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 17:49:32] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 17:50:04] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:08:44] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:08:44] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:09:29] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:09:50] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:09] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:17] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:39] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:39] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:49] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:10:49] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:12:35] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:13:02] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:32] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:33] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:42] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:42] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:47] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:47] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:54] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:55] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:56] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:15:58] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:17:56] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:19:34] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:22:27] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:22:30] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:22:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:22:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:22:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:22:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:02] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:13] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:16] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:27] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:27] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:23:33] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-04-24 18:24:37] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 18:24:53] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 19:01:08] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 19:52:32] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 19:52:35] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 20:09:22] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 20:18:03] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 20:18:23] Query Execution Failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?' at line 1
+[2026-04-24 20:38:18] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 13:52:14] Database Connection Failed: SQLSTATE[HY000] [1049] Unknown database 'bealet_website'
+[2026-05-06 13:55:02] Database Connection Failed: SQLSTATE[HY000] [1049] Unknown database 'bealet_website'
+[2026-05-06 13:55:04] Database Connection Failed: SQLSTATE[HY000] [1049] Unknown database 'bealet_website'
+[2026-05-06 13:55:05] Database Connection Failed: SQLSTATE[HY000] [1049] Unknown database 'bealet_website'
+[2026-05-06 13:56:00] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.site_settings' doesn't exist
+[2026-05-06 14:02:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:29] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:32] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:32] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:33] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:33:33] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:46:52] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:46:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:46:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:46:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 14:46:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 15:03:09] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 15:03:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 15:06:09] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 15:07:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-06 15:08:38] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 07:35:08] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 07:35:15] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 07:35:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 07:35:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 07:43:37] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:29:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:30:04] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:30:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:30:36] Query Execution Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'price' in 'field list'
+[2026-05-07 08:30:36] Insert Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'price' in 'field list'
+[2026-05-07 08:36:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:36:45] Query Execution Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'p.image' in 'field list'
+[2026-05-07 08:39:59] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:41:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 08:50:05] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-07 09:17:14] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 11:47:55] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 11:48:05] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 11:48:08] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 11:48:12] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 17:44:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 17:44:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 18:18:27] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 18:18:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 19:21:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 19:21:13] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-08 19:26:46] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-09 10:16:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-05-09 16:50:12] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.cart' doesn't exist in engine
+[2026-05-09 17:11:46] Query Execution Failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[2026-05-18 22:14:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:14:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:21:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:21:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:21:28] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:21:28] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:21:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:21:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:21:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:21:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:21:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:21:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:22:46] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:22:46] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:23:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:23:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:26:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:26:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:26:29] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:26:29] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:26:52] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:26:52] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:28:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:28:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:31:11] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:31:11] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:33:51] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:33:51] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:36:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:36:56] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:40:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:40:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:40:44] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:40:44] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:42:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:42:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:46:15] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:46:15] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:47:51] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:47:51] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:47:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:47:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:48:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:48:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:48:38] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:48:38] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:50:35] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:50:35] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:50:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:50:40] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:53:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:53:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:53:59] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:53:59] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-18 22:54:07] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-18 22:54:07] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:00] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:00] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:04] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:04] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:24] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:24] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 10:17:29] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 10:17:29] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:46:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:46:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:46:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:46:47] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:46:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:46:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:47:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:47:42] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:47:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:47:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 11:49:35] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 11:49:35] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 12:01:21] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 12:01:21] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 12:01:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 12:01:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 12:01:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 12:01:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-19 12:38:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-19 12:38:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'

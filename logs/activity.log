@@ -1,0 +1,99 @@
+[2026-04-20 10:36:13] [::1] [User: Guest] LOGIN_FAILED: Email not found: crepindale@gmail.com
+[2026-04-20 10:43:26] [::1] [User: 3] LOGIN_SUCCESS: User logged in
+[2026-04-21 15:39:15] [::1] [User: 3] LOGIN_SUCCESS: User logged in
+[2026-04-21 15:47:52] [::1] [User: Guest] BLOG_POST_UPDATED: Blog post #1 updated
+[2026-04-21 15:49:07] [::1] [User: Guest] BLOG_POST_UPDATED: Blog post #1 updated
+[2026-04-21 15:49:30] [::1] [User: Guest] BLOG_POST_UPDATED: Blog post #1 updated
+[2026-04-21 22:35:45] [::1] [User: 3] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-04-24 13:40:25] [::1] [User: 3] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-04-24 14:19:41] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-04-24 14:20:29] [::1] [User: Guest] PRODUCT_UPDATED: Product #12 updated
+[2026-04-24 14:26:28] [::1] [User: Guest] PRODUCT_UPDATED: Product #11 updated
+[2026-04-24 14:27:46] [::1] [User: Guest] PRODUCT_UPDATED: Product #10 updated
+[2026-04-24 14:33:13] [::1] [User: Guest] PRODUCT_UPDATED: Product #10 updated
+[2026-04-24 14:33:33] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-04-24 14:33:44] [::1] [User: Guest] PRODUCT_UPDATED: Product #11 updated
+[2026-04-24 14:33:56] [::1] [User: Guest] PRODUCT_UPDATED: Product #4 updated
+[2026-04-24 15:00:18] [::1] [User: Guest] BLOG_POST_UPDATED: Blog post #2 updated
+[2026-04-24 18:10:09] [::1] [User: 3] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-04-24 18:24:16] [::1] [User: Guest] PRODUCT_UPDATED: Product #4 updated
+[2026-04-24 19:54:54] [::1] [User: Guest] STAFF_MEMBER_CREATED: Staff member created: Crepindale E. Quist
+[2026-04-24 22:35:59] [::1] [User: 3] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-04-24 22:36:29] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-04-24 23:09:34] [::1] [User: Guest] APPOINTMENT_STATUS_UPDATED: Appointment #2 status changed to completed
+[2026-04-24 23:13:42] [::1] [User: Guest] APPOINTMENT_STATUS_UPDATED: Appointment #2 status changed to completed
+[2026-04-24 23:14:53] [::1] [User: 3] APPOINTMENT_BOOKED: Appointment ID: 4
+[2026-05-06 14:17:25] [::1] [User: 3] LOGIN_SUCCESS: User logged in
+[2026-05-06 14:54:00] [::1] [User: Guest] LOGIN_FAILED: Invalid password for: admin@bealet.com
+[2026-05-06 14:54:00] [::1] [User: Guest] LOGIN_FAILED: Invalid password for: admin@bealet.com
+[2026-05-07 08:30:36] [::1] [User: Guest] CHECKOUT_ERROR: Error during checkout: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'price' in 'field list'
+[2026-05-07 08:34:30] [::1] [User: Guest] ORDER_CREATED: Order ID: 3, Tracking: BOC/0002/2026/DQ
+[2026-05-07 08:35:06] [::1] [User: Guest] PAYMENT_VERIFIED: Payment verified for order ID: 3
+[2026-05-07 08:35:12] [::1] [User: Guest] SMS_SENT: Order SMS sent successfully for order ID 3
+[2026-05-07 08:44:01] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 08:45:03] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: admin@bealet.com
+[2026-05-07 08:45:19] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: admin@bealet.com
+[2026-05-07 08:45:37] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 08:47:49] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 08:48:09] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 08:48:47] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-07 08:49:05] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 08:49:55] [::1] [User: Guest] ORDER_STATUS_UPDATED: Order #3 status changed to shipped
+[2026-05-07 09:06:10] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:06:10] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:14:06] [::1] [User: 1] ADMIN_ACCOUNT_UPDATED: Updated admin account #3
+[2026-05-07 09:20:46] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:20:46] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:24:11] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:24:41] [::1] [User: 1] ADMIN_LOGOUT: Admin logged out
+[2026-05-07 09:24:56] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-07 09:25:24] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:25:38] [::1] [User: 1] ADMIN_ACCOUNT_DELETED: Deleted admin account #3
+[2026-05-07 09:28:25] [::1] [User: 1] ADMIN_PROFILE_UPDATED: Admin updated their profile
+[2026-05-07 09:29:16] [::1] [User: 1] ADMIN_LOGOUT: Admin logged out
+[2026-05-07 09:29:35] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:37:08] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:37:57] [::1] [User: Guest] STAFF_MEMBER_CREATED: Staff member created: Emmanuel Letsu
+[2026-05-07 09:40:06] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:41:07] [::1] [User: Guest] STAFF_MEMBER_CREATED: Staff member created: Isaac Sarfo Sowah
+[2026-05-07 09:45:38] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 09:48:59] [::1] [User: Guest] ADMIN_LOGIN_FAILED: User not found or not admin: admin@bealet.com
+[2026-05-07 09:49:08] [::1] [User: Guest] ADMIN_LOGIN_FAILED: User not found or not admin: admin@bealet.com
+[2026-05-07 10:05:32] [::1] [User: Guest] STAFF_MEMBER_CREATED: Staff member created: Caleb Acheampong
+[2026-05-07 10:05:54] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #2 updated
+[2026-05-07 10:06:34] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #3 updated
+[2026-05-07 10:08:33] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #4 updated
+[2026-05-07 10:08:39] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #2 updated
+[2026-05-07 10:08:50] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #2 updated
+[2026-05-07 10:09:05] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #3 updated
+[2026-05-07 10:19:46] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #1 updated
+[2026-05-07 10:26:22] [::1] [User: Guest] STAFF_MEMBER_UPDATED: Staff member #1 updated
+[2026-05-07 16:07:26] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-07 16:07:47] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-07 19:02:32] [::1] [User: Guest] ADMIN_LOGIN_FAILED: User not found or not admin: admin@bealet.com
+[2026-05-07 19:07:15] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-07 19:07:45] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-08 11:02:02] [154.160.18.141] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-08 11:02:16] [154.160.18.141] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-08 17:43:22] [154.160.20.62] [User: Guest] ORDER_CREATED: Order ID: 5, Tracking: BOC/0004/2026/AMQ
+[2026-05-08 17:43:51] [154.160.20.62] [User: Guest] PAYMENT_VERIFIED: Payment verified for order ID: 5
+[2026-05-09 16:54:00] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-09 16:54:29] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-09 17:15:35] [::1] [User: 1] CUSTOMER_REVIEW_SUBMITTED: Customer review submitted for moderation
+[2026-05-09 17:15:49] [::1] [User: 1] CUSTOMER_REVIEW_SUBMITTED: Customer review submitted for moderation
+[2026-05-09 17:16:50] [::1] [User: 1] CUSTOMER_REVIEW_SUBMITTED: Customer review submitted for moderation
+[2026-05-09 17:19:02] [::1] [User: 1] ADMIN_REVIEW_APPROVED: Admin approved customer review #1
+[2026-05-18 19:56:32] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-18 19:56:43] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-18 19:57:00] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-18 19:58:13] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-18 22:14:03] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-18 22:21:28] [::1] [User: Guest] PRODUCT_DELETED: Product #9 deactivated
+[2026-05-19 10:16:51] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-19 10:17:19] [::1] [User: Guest] PRODUCT_UPDATED: Product #4 updated
+[2026-05-19 11:46:16] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-05-19 11:46:32] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-19 11:46:58] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-05-19 11:49:35] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-05-19 12:01:41] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-05-23 12:02:58] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
