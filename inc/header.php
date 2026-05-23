@@ -30,7 +30,7 @@ $primaryNav = [
     ['label' => 'Try-On', 'href' => APP_URL . '/ar-tryon', 'active' => $currentPath === 'ar-tryon.php'],
     ['label' => 'Appointments', 'href' => APP_URL . '/appointment', 'active' => $currentPath === 'appointment.php'],
     ['label' => 'Staff', 'href' => APP_URL . '/team', 'active' => $currentPath === 'team.php'],
-    ['label' => 'Reviews', 'href' => APP_URL . '/reviews', 'active' => $currentPath === 'reviews.php'],
+    ['label' => 'Testimonials', 'href' => APP_URL . '/reviews', 'active' => $currentPath === 'reviews.php'],
     ['label' => 'Blog', 'href' => APP_URL . '/blog', 'active' => $currentPath === 'blog.php' || $currentPath === 'blog-post.php'],
     ['label' => 'Contact', 'href' => APP_URL . '/contact', 'active' => $currentPath === 'contact.php'],
 ];

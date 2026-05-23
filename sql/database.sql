@@ -43,6 +43,7 @@ CREATE TABLE products (
     description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     category VARCHAR(50) NOT NULL,
+    frame_target VARCHAR(50) DEFAULT NULL,
     brand VARCHAR(100),
     material VARCHAR(100),
     color VARCHAR(50),
@@ -136,7 +137,9 @@ CREATE TABLE reviews (
     user_id INT NOT NULL,
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
     comment TEXT,
+    review_image VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_user_product_review (product_id, user_id)
@@ -231,17 +234,17 @@ INSERT INTO users (name, email, phone, password_hash, is_admin) VALUES
 ('John Doe', 'john@example.com', '+233 24 000 0002', '$2y$10$W8QvE7KzX5qW8QvE7KzX5.Lr8GnRzZzq8mX5yF5pK7qV3QvQZ3Sni', 0);
 
 -- Sample products
-INSERT INTO products (name, description, price, category, brand, material, color, stock, image, is_active) VALUES
-('Classic Frame - Black', 'Elegant classic frames perfect for everyday wear', 25000, 'frames', 'Bealet', 'Acetate', 'Black', 50, 'classic-black.jpg', 1),
-('Round Frame - Gold', 'Trendy round frames with vintage appeal', 28000, 'frames', 'Bealet', 'Metal', 'Gold', 35, 'round-gold.jpg', 1),
-('Square Frame - Brown', 'Modern square frames for a sophisticated look', 26000, 'frames', 'Bealet', 'Acetate', 'Brown', 42, 'square-brown.jpg', 1),
-('Cat-Eye Frame - Pink', 'Stylish cat-eye frames for a bold statement', 30000, 'frames', 'Bealet', 'Acetate', 'Pink', 28, 'cateye-pink.jpg', 1),
-('Aviator Frame - Silver', 'Classic aviator frames in premium quality', 32000, 'frames', 'Bealet', 'Metal', 'Silver', 45, 'aviator-silver.jpg', 1),
-('Clear Lenses', 'High-quality clear optical lenses', 15000, 'lenses', 'OpticalPro', 'Polycarbonate', 'Clear', 100, 'clear-lenses.jpg', 1),
-('Blue Light Lenses', 'Anti-blue light lenses for digital screen users', 18000, 'lenses', 'OpticalPro', 'Polycarbonate', 'Clear', 75, 'bluelight-lenses.jpg', 1),
-('Daily Contact Lenses', 'Comfortable daily disposable contact lenses', 12000, 'contact_lenses', 'ContactPro', 'Silicone', 'Clear', 200, 'daily-contacts.jpg', 1),
-('Monthly Contact Lenses', 'Long-lasting monthly contact lenses', 10000, 'contact_lenses', 'ContactPro', 'Silicone', 'Clear', 150, 'monthly-contacts.jpg', 1),
-('Lens Cleaning Kit', 'Complete lens cleaning and maintenance kit', 5000, 'accessories', 'ClearView', 'Various', 'Multi', 80, 'cleaning-kit.jpg', 1);
+INSERT INTO products (name, description, price, category, frame_target, brand, material, color, stock, image, is_active) VALUES
+('Classic Frame - Black', 'Elegant classic frames perfect for everyday wear', 25000, 'frames', 'male', 'Bealet', 'Acetate', 'Black', 50, 'classic-black.jpg', 1),
+('Round Frame - Gold', 'Trendy round frames with vintage appeal', 28000, 'frames', 'female', 'Bealet', 'Metal', 'Gold', 35, 'round-gold.jpg', 1),
+('Square Frame - Brown', 'Modern square frames for a sophisticated look', 26000, 'frames', 'unisex', 'Bealet', 'Acetate', 'Brown', 42, 'square-brown.jpg', 1),
+('Cat-Eye Frame - Pink', 'Stylish cat-eye frames for a bold statement', 30000, 'frames', 'female', 'Bealet', 'Acetate', 'Pink', 28, 'cateye-pink.jpg', 1),
+('Aviator Frame - Silver', 'Classic aviator frames in premium quality', 32000, 'frames', 'male', 'Bealet', 'Metal', 'Silver', 45, 'aviator-silver.jpg', 1),
+('Clear Lenses', 'High-quality clear optical lenses', 15000, 'lenses', NULL, 'OpticalPro', 'Polycarbonate', 'Clear', 100, 'clear-lenses.jpg', 1),
+('Blue Light Lenses', 'Anti-blue light lenses for digital screen users', 18000, 'lenses', NULL, 'OpticalPro', 'Polycarbonate', 'Clear', 75, 'bluelight-lenses.jpg', 1),
+('Daily Contact Lenses', 'Comfortable daily disposable contact lenses', 12000, 'contact_lenses', NULL, 'ContactPro', 'Silicone', 'Clear', 200, 'daily-contacts.jpg', 1),
+('Monthly Contact Lenses', 'Long-lasting monthly contact lenses', 10000, 'contact_lenses', NULL, 'ContactPro', 'Silicone', 'Clear', 150, 'monthly-contacts.jpg', 1),
+('Lens Cleaning Kit', 'Complete lens cleaning and maintenance kit', 5000, 'accessories', NULL, 'ClearView', 'Various', 'Multi', 80, 'cleaning-kit.jpg', 1);
 
 -- Sample appointments
 INSERT INTO appointments (name, email, phone, appointment_date, appointment_time, notes, status, user_id) VALUES

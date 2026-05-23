@@ -17,6 +17,7 @@ global $db;
 
 $errors = [];
 ensureProductGalleryTable();
+ensureProductReviewSupport();
 $productColumns = $db->fetchAll("SHOW COLUMNS FROM products");
 $productColumnMap = [];
 
@@ -69,6 +70,7 @@ $hasUpdatedAtColumn = isset($productColumnMap['updated_at']);
 $hasCreatedAtColumn = isset($productColumnMap['created_at']);
 $hasIsActiveColumn = isset($productColumnMap['is_active']);
 $hasIsFeaturedColumn = isset($productColumnMap['is_featured']);
+$hasFrameTargetColumn = isset($productColumnMap['frame_target']);
 $hasArModel2dColumn = isset($productColumnMap['ar_model_2d']);
 $hasArModel2dLeftColumn = isset($productColumnMap['ar_model_2d_left']);
 $hasArModel2dRightColumn = isset($productColumnMap['ar_model_2d_right']);
@@ -216,6 +218,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = sanitize($_POST['name'] ?? '');
         $brand = sanitize($_POST['brand'] ?? '');
         $category = sanitize($_POST['category'] ?? '');
+        $frameTarget = sanitize($_POST['frame_target'] ?? '');
         $description = sanitize($_POST['description'] ?? '');
         $price = (float) ($_POST['price'] ?? 0);
         $stock = (int) ($_POST['stock'] ?? 0);
@@ -240,6 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (empty($category)) {
             $errors[] = 'Category is required';
+        }
+        if ($frameTarget !== '' && !isset(getProductAudienceOptions()[$frameTarget])) {
+            $errors[] = 'Please select a valid frame audience.';
         }
         if ($price <= 0) {
             $errors[] = 'Price must be greater than 0';
@@ -397,6 +403,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $params[] = $color;
                 }
 
+                if ($hasFrameTargetColumn) {
+                    $setClauses[] = "frame_target = ?";
+                    $params[] = $category === 'frames' ? ($frameTarget !== '' ? $frameTarget : null) : null;
+                }
+
                 if ($imageColumn) {
                     $setClauses[] = "{$imageColumn} = ?";
                     $params[] = $productImage;
@@ -519,6 +530,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $columns[] = $colorColumn;
                     $placeholders[] = '?';
                     $params[] = $color;
+                }
+
+                if ($hasFrameTargetColumn) {
+                    $columns[] = 'frame_target';
+                    $placeholders[] = '?';
+                    $params[] = $category === 'frames' ? ($frameTarget !== '' ? $frameTarget : null) : null;
                 }
 
                 if ($imageColumn) {
@@ -671,6 +688,7 @@ foreach ($products as $product) {
         'name' => $product['name'] ?? '',
         'brand' => $product['brand'] ?? '',
         'category' => $product['category'] ?? '',
+        'frame_target' => $product['frame_target'] ?? '',
         'description' => $product['description'] ?? '',
         'price' => isset($product['price']) ? (string) $product['price'] : '',
         'stock' => isset($product['stock']) ? (string) $product['stock'] : '0',
@@ -849,7 +867,12 @@ require_once __DIR__ . '/inc/header.php';
                                     </div>
                                 </td>
                                 <td><?php echo sanitize($product['brand'] ?? ''); ?></td>
-                                <td><?php echo sanitize($product['category']); ?></td>
+                                <td>
+                                    <div class="fw-semibold"><?php echo sanitize(formatProductCategoryLabel($product['category'] ?? '')); ?></div>
+                                    <?php if (!empty($product['frame_target'])): ?>
+                                    <small class="text-muted"><?php echo sanitize(formatProductAudienceLabel($product['frame_target'])); ?></small>
+                                    <?php endif; ?>
+                                </td>
                                 <td><?php echo formatCurrency($product['price']); ?></td>
                                 <td>
                                     <span class="badge bg-<?php echo ((int) ($product['stock'] ?? 0)) > 10 ? 'success' : 'warning'; ?>">
@@ -933,6 +956,23 @@ require_once __DIR__ . '/inc/header.php';
                                     </select>
                                 </div>
                             </div>
+
+                            <?php if ($hasFrameTargetColumn): ?>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="productFrameTarget">Frame Audience</label>
+                                    <select class="form-select" name="frame_target" id="productFrameTarget">
+                                        <option value="">General / Not specified</option>
+                                        <?php foreach (getProductAudienceOptions() as $audienceValue => $audienceLabel): ?>
+                                        <option value="<?php echo sanitize($audienceValue); ?>" <?php echo (($initialEditProductData['frame_target'] ?? '') === $audienceValue) ? 'selected' : ''; ?>>
+                                            <?php echo sanitize($audienceLabel); ?>
+                                        </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <small class="text-muted">Use this for male, female, kids, or unisex frame browsing on the shop page.</small>
+                                </div>
+                            </div>
+                            <?php endif; ?>
 
                             <?php if ($hasMaterialColumn || $hasColorColumn): ?>
                             <div class="row">
@@ -1280,6 +1320,22 @@ require_once __DIR__ . '/inc/header.php';
             });
         }
 
+        function syncFrameTargetField() {
+            const categorySelect = document.getElementById('productCategory');
+            const frameTargetSelect = document.getElementById('productFrameTarget');
+
+            if (!categorySelect || !frameTargetSelect) {
+                return;
+            }
+
+            const enabled = categorySelect.value === 'frames';
+            frameTargetSelect.disabled = !enabled;
+
+            if (!enabled) {
+                frameTargetSelect.value = '';
+            }
+        }
+
         function resetProductForm() {
             const form = document.getElementById('productForm');
             if (!form) {
@@ -1367,6 +1423,7 @@ require_once __DIR__ . '/inc/header.php';
                 productModalBody.scrollTop = 0;
             }
 
+            syncFrameTargetField();
             window.requestAnimationFrame(updateProductModalScrollCue);
         }
 
@@ -1383,6 +1440,10 @@ require_once __DIR__ . '/inc/header.php';
             document.getElementById('productName').value = product.name || '';
             document.getElementById('productBrand').value = product.brand || '';
             document.getElementById('productCategory').value = product.category || '';
+            const productFrameTarget = document.getElementById('productFrameTarget');
+            if (productFrameTarget) {
+                productFrameTarget.value = product.frame_target || '';
+            }
             document.getElementById('productDescription').value = product.description || '';
             document.getElementById('productPrice').value = product.price || '';
             document.getElementById('productStock').value = product.stock || 0;
@@ -1470,6 +1531,7 @@ require_once __DIR__ . '/inc/header.php';
                 }
             }
 
+            syncFrameTargetField();
             showProductModal();
 
             return false;
@@ -1501,6 +1563,7 @@ require_once __DIR__ . '/inc/header.php';
             syncProductModalLayout();
 
             document.getElementById('addProductButton')?.addEventListener('click', resetProductForm);
+            document.getElementById('productCategory')?.addEventListener('change', syncFrameTargetField);
             productModalElement?.addEventListener('hidden.bs.modal', resetProductForm);
             productModalElement?.addEventListener('shown.bs.modal', function () {
                 syncProductModalLayout();
@@ -1526,6 +1589,8 @@ require_once __DIR__ . '/inc/header.php';
                     populateProductForm(initialEditProduct);
                 }, { once: true });
             }
+
+            syncFrameTargetField();
 
             document.addEventListener('click', function (event) {
                 const editButton = event.target.closest('[data-edit-product]');

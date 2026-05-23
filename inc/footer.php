@@ -50,7 +50,7 @@ $whatsAppContact = getWhatsAppContactConfig();
                         <i class="fas fa-chevron-right"></i> Book Appointment
                     </a>
                     <a href="<?php echo APP_URL; ?>/reviews" class="footer-link d-block">
-                        <i class="fas fa-chevron-right"></i> Customer Reviews
+                        <i class="fas fa-chevron-right"></i> Testimonials
                     </a>
                 </div>
                 
@@ -66,8 +66,11 @@ $whatsAppContact = getWhatsAppContactConfig();
                     <a href="<?php echo APP_URL; ?>/track-order.php" class="footer-link d-block">
                         <i class="fas fa-chevron-right"></i> Track Order
                     </a>
-                    <a href="#" class="footer-link d-block">
-                        <i class="fas fa-chevron-right"></i> Return Policy
+                    <a href="<?php echo APP_URL; ?>/shipping-policy.php" class="footer-link d-block">
+                        <i class="fas fa-chevron-right"></i> Shipping Policy
+                    </a>
+                    <a href="<?php echo APP_URL; ?>/refund-policy.php" class="footer-link d-block">
+                        <i class="fas fa-chevron-right"></i> Refund Policy
                     </a>
                 </div>
                 
@@ -96,11 +99,12 @@ $whatsAppContact = getWhatsAppContactConfig();
             <div class="footer-bottom">
                 <p>&copy; <?php echo date('Y'); ?> <?php echo sanitize(getCompanyName()); ?>. All rights reserved.</p>
                 <p class="small mt-2 mb-0">Developed and Designed By DALE QUIST (Enable Tecgnologies)</p>
-                <p class="small mt-2">
-                    <a href="#" class="text-muted text-decoration-none">Privacy Policy</a> | 
-                    <a href="#" class="text-muted text-decoration-none">Terms of Service</a> | 
-                    <a href="#" class="text-muted text-decoration-none">Cookie Policy</a>
-                </p>
+                <div class="footer-legal-links mt-3">
+                    <a href="<?php echo APP_URL; ?>/shipping-policy.php" class="btn btn-outline-light btn-sm">Shipping Policy</a>
+                    <a href="<?php echo APP_URL; ?>/refund-policy.php" class="btn btn-outline-light btn-sm">Refund Policy</a>
+                    <a href="<?php echo APP_URL; ?>/privacy-policy.php" class="btn btn-outline-light btn-sm">Privacy Policy</a>
+                    <a href="<?php echo APP_URL; ?>/terms-of-service.php" class="btn btn-outline-light btn-sm">Terms of Service</a>
+                </div>
             </div>
         </div>
     </footer>

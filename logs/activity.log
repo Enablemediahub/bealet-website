@@ -97,3 +97,5 @@
 [2026-05-19 11:49:35] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
 [2026-05-19 12:01:41] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
 [2026-05-23 12:02:58] [::1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-05-23 13:01:50] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-05-23 13:44:55] [::1] [User: 1] PRODUCT_REVIEW_SUBMITTED: Product review saved for product #10

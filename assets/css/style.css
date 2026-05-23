@@ -687,6 +687,16 @@ a:hover {
     line-height: 1.7;
 }
 
+.product-testimonial-thumb {
+    width: 100%;
+    max-width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: #f8fafc;
+}
+
 .review-empty-icon {
     font-size: 2rem;
     color: #2563eb;
@@ -1016,6 +1026,17 @@ footer {
     color: var(--primary);
     text-decoration: none;
     margin-left: 0.25rem;
+}
+
+.footer-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.footer-legal-links .btn {
+    border-radius: 999px;
 }
 
 .social-links {
@@ -2913,6 +2934,43 @@ footer {
     text-decoration: none;
     box-shadow: 0 18px 42px rgba(18, 140, 126, 0.28);
     transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.policy-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: 2rem;
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 32%),
+        linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.08);
+}
+
+.policy-card {
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 1.5rem;
+    padding: clamp(1.35rem, 2vw, 1.8rem);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+    height: 100%;
+}
+
+.policy-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.9rem;
+}
+
+.policy-card p,
+.policy-card li {
+    color: #475569;
+    line-height: 1.75;
+}
+
+.policy-list {
+    margin: 0;
+    padding-left: 1.2rem;
 }
 
 body.cookie-consent-visible .floating-whatsapp-button {

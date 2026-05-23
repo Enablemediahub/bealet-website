@@ -1,6 +1,6 @@
 <?php
 /**
- * Bealet Website - Customer Reviews Page
+ * Bealet Website - Customer Testimonials Page
  */
 
 require_once __DIR__ . '/inc/config.php';
@@ -17,7 +17,7 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
     if (!isLoggedIn() || !$currentUser) {
-        $errors[] = 'Please login or register before leaving a review.';
+        $errors[] = 'Please login or register before leaving a testimonial.';
     } elseif (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $errors[] = 'Invalid request. Please try again.';
     } else {
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
         }
 
         if ($comment === '') {
-            $errors[] = 'Please write a short review before submitting.';
+            $errors[] = 'Please write a short testimonial before submitting.';
         } elseif (mb_strlen($comment) < 12) {
             $errors[] = 'Please make your review a little more descriptive.';
         } elseif (mb_strlen($comment) > 1500) {
@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
                 );
             }
 
-            createLog('CUSTOMER_REVIEW_SUBMITTED', 'Customer review submitted for moderation', (int) $currentUser['id']);
-            setFlashMessage('success', 'Your review has been saved and sent for admin approval.');
+            createLog('CUSTOMER_REVIEW_SUBMITTED', 'Customer testimonial submitted for moderation', (int) $currentUser['id']);
+            setFlashMessage('success', 'Your testimonial has been saved and sent for admin approval.');
             redirect(APP_URL . '/reviews');
         }
     }
@@ -99,6 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
 
 $summary = getCustomerReviewSummary();
 $approvedReviews = getApprovedCustomerReviews();
+$productTestimonials = getRecentProductTestimonials(12);
 $existingReview = $currentUser ? getCustomerReviewByUserId((int) $currentUser['id']) : null;
 $formRating = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])
     ? max(1, min(5, (int) ($_POST['rating'] ?? 5)))
@@ -136,7 +137,7 @@ require_once __DIR__ . '/inc/header.php';
                                 <i class="<?php echo $i <= round((float) ($summary['average_rating'] ?? 0)) ? 'fas' : 'far'; ?> fa-star"></i>
                                 <?php endfor; ?>
                             </div>
-                            <p class="mb-1 fw-semibold"><?php echo (int) ($summary['total_reviews'] ?? 0); ?> approved customer reviews</p>
+                            <p class="mb-1 fw-semibold"><?php echo (int) ($summary['total_reviews'] ?? 0); ?> approved customer testimonials</p>
                             <p class="text-muted mb-0">Each new or edited review is checked by admin before it appears here.</p>
                         </div>
                     </div>
@@ -154,8 +155,8 @@ require_once __DIR__ . '/inc/header.php';
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <img src="<?php echo sanitize($viewerImageUrl); ?>" alt="Your profile" class="review-avatar review-avatar-lg">
                         <div>
-                            <h2 class="h4 mb-1">Add Your Review</h2>
-                            <p class="text-muted mb-0">Registered customers can leave one review and update it anytime.</p>
+                            <h2 class="h4 mb-1">Add Your Testimonial</h2>
+                            <p class="text-muted mb-0">Registered customers can leave one testimonial and update it anytime.</p>
                         </div>
                     </div>
 
@@ -196,12 +197,12 @@ require_once __DIR__ . '/inc/header.php';
 
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-paper-plane me-2"></i>
-                            <?php echo $existingReview ? 'Update Review' : 'Submit Review'; ?>
+                            <?php echo $existingReview ? 'Update Testimonial' : 'Submit Testimonial'; ?>
                         </button>
                     </form>
                     <?php else: ?>
                     <div class="review-login-card">
-                        <p class="mb-3">Login or create an account to leave a review with your profile image.</p>
+                        <p class="mb-3">Login or create an account to leave a testimonial with your profile image.</p>
                         <div class="d-grid gap-2">
                             <a href="<?php echo APP_URL; ?>/login" class="btn btn-primary">
                                 <i class="fas fa-sign-in-alt me-2"></i> Login
@@ -217,7 +218,7 @@ require_once __DIR__ . '/inc/header.php';
 
             <div class="col-xl-8">
                 <div class="section-title text-start mb-4">
-                    <h2>Recent Reviews</h2>
+                    <h2>Recent Testimonials</h2>
                     <p>Compact cards and small rounded portraits keep the page easy to scan even when there are many customer stories.</p>
                 </div>
 
@@ -253,8 +254,67 @@ require_once __DIR__ . '/inc/header.php';
                 <div class="card border-0 shadow-sm">
                     <div class="card-body py-5 text-center">
                         <i class="fas fa-comments review-empty-icon mb-3"></i>
-                        <h3 class="h4">Customer reviews will appear here soon</h3>
+                        <h3 class="h4">Customer testimonials will appear here soon</h3>
                         <p class="text-muted mb-0">Once approved by admin, the first published customer stories will show up in this space.</p>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <div class="section-title text-start mt-5 mb-4">
+                    <h2>Product Testimonials</h2>
+                    <p>Recent customer feedback collected directly from individual product pages and frame galleries.</p>
+                </div>
+
+                <?php if (!empty($productTestimonials)): ?>
+                <div class="row g-3">
+                    <?php foreach ($productTestimonials as $review): ?>
+                    <div class="col-md-6">
+                        <article class="review-card h-100">
+                            <div class="review-card-head">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img
+                                        src="<?php echo sanitize(getUserProfileImageUrl($review['reviewer_profile_image'] ?? '', $review['reviewer_name'] ?? 'Customer')); ?>"
+                                        alt="<?php echo sanitize($review['reviewer_name'] ?? 'Customer'); ?>"
+                                        class="review-avatar"
+                                    >
+                                    <div>
+                                        <h3 class="h6 mb-1"><?php echo sanitize($review['reviewer_name'] ?? 'Customer'); ?></h3>
+                                        <div class="review-stars small">
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <i class="<?php echo $i <= (int) ($review['rating'] ?? 0) ? 'fas' : 'far'; ?> fa-star"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <small class="text-muted"><?php echo formatDate($review['updated_at'] ?? $review['created_at']); ?></small>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <span class="badge text-bg-light border"><?php echo sanitize($review['product_name'] ?? 'Product'); ?></span>
+                                <?php if (!empty($review['frame_target'])): ?>
+                                <span class="badge text-bg-light border"><?php echo sanitize(formatProductAudienceLabel($review['frame_target'])); ?></span>
+                                <?php elseif (!empty($review['category'])): ?>
+                                <span class="badge text-bg-light border"><?php echo sanitize(formatProductCategoryLabel($review['category'])); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <?php if (!empty($review['review_image'])): ?>
+                            <div class="mb-3">
+                                <img
+                                    src="<?php echo sanitize(getProductReviewImageUrl($review['review_image'])); ?>"
+                                    alt="<?php echo sanitize(($review['reviewer_name'] ?? 'Customer') . ' product photo'); ?>"
+                                    class="product-testimonial-thumb"
+                                >
+                            </div>
+                            <?php endif; ?>
+                            <p class="mb-0 review-comment"><?php echo nl2br(sanitize($review['comment'] ?? '')); ?></p>
+                        </article>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php else: ?>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body py-4 text-center">
+                        <h3 class="h5">Product testimonials will appear here soon</h3>
+                        <p class="text-muted mb-0">Once customers start leaving reviews from product pages, they will also show up in this section.</p>
                     </div>
                 </div>
                 <?php endif; ?>

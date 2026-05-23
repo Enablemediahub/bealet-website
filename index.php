@@ -345,6 +345,73 @@ $introVideoUrl = getIntroVideoUrl();
         </div>
     </section>
 
+    <!-- Featured Products Section -->
+    <section class="section-spacing pt-0 bg-light">
+        <div class="container-lg">
+            <div class="section-title">
+                <h2>Featured Products</h2>
+                <p>Discover our latest collection of premium eyewear</p>
+            </div>
+            
+            <div class="row g-4">
+                <?php foreach ($featuredProducts as $product): ?>
+                <?php
+                $productTryOnLink = getProductTryOnLink($product);
+                $quickProductPayload = [
+                    'id' => (int) $product['id'],
+                    'name' => (string) $product['name'],
+                    'price' => (float) $product['price'],
+                    'description' => (string) ($product['description'] ?? ''),
+                    'stock' => (int) ($product['stock'] ?? 0),
+                    'image' => getProductImagePath($product),
+                ];
+                ?>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card">
+                        <img src="<?php echo getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                        <div class="product-info">
+                            <div class="product-name"><?php echo sanitize($product['name']); ?></div>
+                            <div class="product-price"><?php echo formatCurrency($product['price']); ?></div>
+                            
+                            <?php
+                            $rating = getProductRating($product['id']);
+                            ?>
+                            <div class="product-rating">
+                                <div>
+                                    <?php for ($i = 0; $i < 5; $i++): ?>
+                                    <i class="fas fa-star star" style="color: <?php echo $i < $rating['average'] ? 'var(--warning)' : '#E5E7EB'; ?>"></i>
+                                    <?php endfor; ?>
+                                </div>
+                                <span class="rating-text"><?php echo $rating['average']; ?>/5 (<?php echo $rating['total']; ?> reviews)</span>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <?php if ($productTryOnLink !== ''): ?>
+                                <a class="btn btn-outline-dark" href="<?php echo sanitize($productTryOnLink); ?>">
+                                    <i class="fas fa-vr-cardboard me-2"></i> Try On
+                                </a>
+                                <?php endif; ?>
+                                <button class="btn btn-primary" type="button" onclick='openQuickPurchaseModal(<?php echo json_encode($quickProductPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'>
+                                    <i class="fas fa-bolt me-2"></i> Buy It Now
+                                </button>
+                                <a class="btn btn-outline-primary" href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo (int) $product['id']; ?>">
+                                    <i class="fas fa-eye me-2"></i> View Product
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="<?php echo APP_URL; ?>/shop.php" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right me-2"></i> View All Products
+                </a>
+            </div>
+        </div>
+    </section>
+
     <section class="section-spacing pt-0">
         <div class="container-lg">
             <div class="reviews-showcase">
@@ -354,7 +421,7 @@ $introVideoUrl = getIntroVideoUrl();
                         <p>Verified customer comments with compact profile images and quick star snapshots.</p>
                     </div>
                     <a href="<?php echo APP_URL; ?>/reviews" class="btn btn-outline-primary">
-                        <i class="fas fa-star me-2"></i> Open Reviews Page
+                        <i class="fas fa-star me-2"></i> Open Testimonials
                     </a>
                 </div>
 
@@ -407,7 +474,7 @@ $introVideoUrl = getIntroVideoUrl();
                         <h3 class="h5">The customer review wall is ready.</h3>
                         <p class="text-muted mb-3">Once the first reviews are approved by admin, they will begin appearing here on the landing page.</p>
                         <a href="<?php echo APP_URL; ?>/reviews" class="btn btn-primary">
-                            <i class="fas fa-arrow-right me-2"></i> Visit Reviews
+                            <i class="fas fa-arrow-right me-2"></i> Visit Testimonials
                         </a>
                     </div>
                 </div>
@@ -440,77 +507,6 @@ $introVideoUrl = getIntroVideoUrl();
         </div>
     </section>
     
-    <!-- Featured Products Section -->
-    <section class="section-spacing bg-light">
-        <div class="container-lg">
-            <div class="section-title">
-                <h2>Featured Products</h2>
-                <p>Discover our latest collection of premium eyewear</p>
-            </div>
-            
-            <div class="row g-4">
-                <?php foreach ($featuredProducts as $product): ?>
-                <?php
-                $productTryOnLink = getProductTryOnLink($product);
-                $quickProductPayload = [
-                    'id' => (int) $product['id'],
-                    'name' => (string) $product['name'],
-                    'price' => (float) $product['price'],
-                    'description' => (string) ($product['description'] ?? ''),
-                    'stock' => (int) ($product['stock'] ?? 0),
-                    'image' => getProductImagePath($product),
-                ];
-                ?>
-                <div class="col-md-6 col-lg-4">
-                    <div class="card product-card">
-                        <img src="<?php echo getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
-                        <div class="product-info">
-                            <div class="product-name"><?php echo sanitize($product['name']); ?></div>
-                            <div class="product-price"><?php echo formatCurrency($product['price']); ?></div>
-                            
-                            <?php
-                            $rating = getProductRating($product['id']);
-                            ?>
-                            <div class="product-rating">
-                                <div>
-                                    <?php for ($i = 0; $i < 5; $i++): ?>
-                                    <i class="fas fa-star star" style="color: <?php echo $i < $rating['average'] ? 'var(--warning)' : '#E5E7EB'; ?>"></i>
-                                    <?php endfor; ?>
-                                </div>
-                                <span class="rating-text"><?php echo $rating['average']; ?>/5 (<?php echo $rating['total']; ?> reviews)</span>
-                            </div>
-                            
-                            <div class="d-grid gap-2">
-                                <?php if ($productTryOnLink !== ''): ?>
-                                <a class="btn btn-outline-dark" href="<?php echo sanitize($productTryOnLink); ?>">
-                                    <i class="fas fa-vr-cardboard me-2"></i> Try On
-                                </a>
-                                <?php endif; ?>
-                                <button class="btn btn-primary" type="button" onclick='openQuickPurchaseModal(<?php echo json_encode($quickProductPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'>
-                                    <i class="fas fa-bolt me-2"></i> Buy It Now
-                                </button>
-                                <button
-                                    class="btn btn-outline-primary wishlist-btn"
-                                    type="button"
-                                    data-product-id="<?php echo (int) $product['id']; ?>"
-                                    onclick="toggleWishlist(<?php echo (int) $product['id']; ?>, this)"
-                                >
-                                    <i class="fas fa-heart me-2"></i> Wishlist
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            
-            <div class="text-center mt-5">
-                <a href="<?php echo APP_URL; ?>/shop.php" class="btn btn-primary btn-lg">
-                    <i class="fas fa-arrow-right me-2"></i> View All Products
-                </a>
-            </div>
-        </div>
-    </section>
 <?php if ($introVideoUrl !== ''): ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {

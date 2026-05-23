@@ -838,7 +838,52 @@ function uploadDataUriImage($dataUri, $subfolder = '', $allowedMimeTypes = null,
 }
 
 /**
- * Get Cart Count
+ * Ensure the cart table exists and can be queried safely.
+ */
+function ensureCartTable($forceRepair = false) {
+    global $db;
+
+    static $initialized = false;
+
+    if (!isset($db)) {
+        return;
+    }
+
+    if ($initialized && !$forceRepair) {
+        return;
+    }
+
+    try {
+        if ($forceRepair) {
+            $db->execute("DROP TABLE IF EXISTS cart");
+        }
+
+        $db->execute(
+            "CREATE TABLE IF NOT EXISTS cart (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                session_id VARCHAR(255) DEFAULT NULL,
+                user_id INT NULL,
+                product_id INT NOT NULL,
+                quantity INT NOT NULL DEFAULT 1,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+                UNIQUE KEY unique_cart_item (session_id, user_id, product_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+        $initialized = true;
+    } catch (Throwable $exception) {
+        error_log(
+            '[CART_TABLE_ENSURE_FAILED] ' . $exception->getMessage() . "\n",
+            3,
+            __DIR__ . '/../logs/error.log'
+        );
+    }
+}
+
+/**
+ * Detect known cart-table failure modes.
  */
 function isCartTableUnavailable(PDOException $exception) {
     $message = $exception->getMessage();
@@ -852,6 +897,8 @@ function isCartTableUnavailable(PDOException $exception) {
  * Run a cart query without letting a broken cart table crash the storefront.
  */
 function runCartQuerySafely(callable $callback, $fallback) {
+    ensureCartTable();
+
     try {
         return $callback();
     } catch (PDOException $exception) {
@@ -859,8 +906,18 @@ function runCartQuerySafely(callable $callback, $fallback) {
             throw $exception;
         }
 
+        ensureCartTable(true);
+
+        try {
+            return $callback();
+        } catch (PDOException $retryException) {
+            if (!isCartTableUnavailable($retryException)) {
+                throw $retryException;
+            }
+        }
+
         error_log(
-            '[CART_TABLE_UNAVAILABLE] ' . $exception->getMessage(),
+            '[CART_TABLE_UNAVAILABLE] ' . $exception->getMessage() . "\n",
             3,
             __DIR__ . '/../logs/error.log'
         );
@@ -1151,6 +1208,123 @@ function getProductGalleryImages($productId, $product = null) {
     }
 
     return array_slice($gallery, 0, 5);
+}
+
+/**
+ * Canonical product categories used across the storefront and admin.
+ */
+function getProductCategoryOptions() {
+    return [
+        'frames' => 'Frames',
+        'lenses' => 'Lenses',
+        'contact_lenses' => 'Contact Lenses',
+        'accessories' => 'Accessories',
+    ];
+}
+
+/**
+ * Audience/group options for frame-heavy product browsing.
+ */
+function getProductAudienceOptions() {
+    return [
+        'male' => 'Male Frames',
+        'female' => 'Female Frames',
+        'kids' => 'Kids Frames',
+        'unisex' => 'Unisex Frames',
+    ];
+}
+
+/**
+ * Human-readable product category label.
+ */
+function formatProductCategoryLabel($category) {
+    $category = trim((string) $category);
+    $options = getProductCategoryOptions();
+
+    if (isset($options[$category])) {
+        return $options[$category];
+    }
+
+    return ucwords(str_replace('_', ' ', $category));
+}
+
+/**
+ * Human-readable frame audience label.
+ */
+function formatProductAudienceLabel($audience) {
+    $audience = trim((string) $audience);
+    $options = getProductAudienceOptions();
+
+    if (isset($options[$audience])) {
+        return $options[$audience];
+    }
+
+    return ucwords(str_replace('_', ' ', $audience));
+}
+
+/**
+ * Resolve a review image stored on disk.
+ */
+function getProductReviewImageLocalPath($image) {
+    if (empty($image)) {
+        return null;
+    }
+
+    $image = trim((string) $image);
+    if (filter_var($image, FILTER_VALIDATE_URL)) {
+        return null;
+    }
+
+    $normalized = ltrim(str_replace('\\', '/', $image), '/');
+    $basename = basename($normalized);
+    $candidates = [
+        __DIR__ . '/../' . $normalized,
+        __DIR__ . '/../assets/uploads/reviews/' . $basename,
+        __DIR__ . '/../assets/images/' . $basename,
+    ];
+
+    foreach ($candidates as $candidate) {
+        if (is_file($candidate)) {
+            return $candidate;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Public URL for a product review image.
+ */
+function getProductReviewImageUrl($image) {
+    if (empty($image)) {
+        return '';
+    }
+
+    $image = trim((string) $image);
+    if (filter_var($image, FILTER_VALIDATE_URL)) {
+        return $image;
+    }
+
+    $normalized = ltrim(str_replace('\\', '/', $image), '/');
+    $basename = basename($normalized);
+
+    if (str_starts_with($normalized, 'assets/')) {
+        $localPath = __DIR__ . '/../' . $normalized;
+        if (is_file($localPath)) {
+            return APP_URL . '/' . $normalized;
+        }
+    }
+
+    $localPath = getProductReviewImageLocalPath($image);
+    if ($localPath && str_contains(str_replace('\\', '/', $localPath), '/assets/uploads/reviews/')) {
+        return APP_URL . '/assets/uploads/reviews/' . rawurlencode($basename);
+    }
+
+    if ($localPath && str_contains(str_replace('\\', '/', $localPath), '/assets/images/')) {
+        return APP_URL . '/assets/images/' . rawurlencode($basename);
+    }
+
+    return '';
 }
 
 /**
@@ -2126,6 +2300,89 @@ function ensureCustomerReviewsTable() {
 }
 
 /**
+ * Ensure product review and audience support exists on older local databases.
+ */
+function ensureProductReviewSupport() {
+    global $db;
+
+    static $initialized = false;
+
+    if ($initialized || !isset($db)) {
+        return;
+    }
+
+    try {
+        $db->execute(
+            "CREATE TABLE IF NOT EXISTS reviews (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_id INT NOT NULL,
+                user_id INT NOT NULL,
+                rating TINYINT UNSIGNED NOT NULL DEFAULT 5,
+                comment TEXT DEFAULT NULL,
+                review_image VARCHAR(255) DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+                CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                UNIQUE KEY unique_user_product_review (product_id, user_id),
+                KEY idx_reviews_product_created (product_id, created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    } catch (Throwable $e) {
+        // Keep the storefront available if review support cannot be upgraded in this pass.
+    }
+
+    try {
+        $reviewColumns = $db->fetchAll("SHOW COLUMNS FROM reviews");
+        $reviewColumnMap = [];
+        foreach ($reviewColumns as $column) {
+            if (!empty($column['Field'])) {
+                $reviewColumnMap[$column['Field']] = true;
+            }
+        }
+
+        if (!isset($reviewColumnMap['review_image'])) {
+            $db->update("ALTER TABLE reviews ADD COLUMN review_image VARCHAR(255) DEFAULT NULL AFTER comment");
+        }
+
+        if (!isset($reviewColumnMap['updated_at'])) {
+            $db->update("ALTER TABLE reviews ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at");
+        }
+    } catch (Throwable $e) {
+        // Ignore partial upgrade issues to avoid taking down the page.
+    }
+
+    try {
+        $productColumns = $db->fetchAll("SHOW COLUMNS FROM products");
+        $productColumnMap = [];
+        foreach ($productColumns as $column) {
+            if (!empty($column['Field'])) {
+                $productColumnMap[$column['Field']] = true;
+            }
+        }
+
+        if (!isset($productColumnMap['frame_target'])) {
+            $db->update("ALTER TABLE products ADD COLUMN frame_target VARCHAR(50) DEFAULT NULL AFTER category");
+        }
+
+        $db->update(
+            "UPDATE products
+             SET frame_target = CASE
+                 WHEN LOWER(CONCAT(COALESCE(name, ''), ' ', COALESCE(description, ''))) REGEXP 'kid|kids|child|children|youth|junior|teen' THEN 'kids'
+                 WHEN LOWER(CONCAT(COALESCE(name, ''), ' ', COALESCE(description, ''))) REGEXP 'female|women|woman|ladies|lady|girls|girl|cat-eye' THEN 'female'
+                 WHEN LOWER(CONCAT(COALESCE(name, ''), ' ', COALESCE(description, ''))) REGEXP 'male|men|man|gent|gents|boys|boy' THEN 'male'
+                 ELSE 'unisex'
+             END
+             WHERE category = 'frames' AND (frame_target IS NULL OR frame_target = '')"
+        );
+    } catch (Throwable $e) {
+        // Ignore product audience upgrade issues and continue with existing schema.
+    }
+
+    $initialized = true;
+}
+
+/**
  * Resolve a stored user profile image to a local path when possible.
  */
 function getUserProfileImageLocalPath($image) {
@@ -2222,6 +2479,89 @@ function getCustomerReviewByUserId($userId) {
 }
 
 /**
+ * Get one user's product review if it exists.
+ */
+function getProductReviewByUserId($productId, $userId) {
+    global $db;
+
+    ensureProductReviewSupport();
+
+    if (!isset($db) || (int) $productId <= 0 || (int) $userId <= 0) {
+        return null;
+    }
+
+    try {
+        return $db->fetch(
+            "SELECT * FROM reviews WHERE product_id = ? AND user_id = ? LIMIT 1",
+            [(int) $productId, (int) $userId]
+        ) ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+/**
+ * Get product reviews with user context for storefront display.
+ */
+function getProductReviews($productId, $limit = null) {
+    global $db;
+
+    ensureProductReviewSupport();
+
+    if (!isset($db) || (int) $productId <= 0) {
+        return [];
+    }
+
+    $query = "SELECT r.*, u.name AS reviewer_name, u.profile_image AS reviewer_profile_image
+              FROM reviews r
+              LEFT JOIN users u ON r.user_id = u.id
+              WHERE r.product_id = ?
+              ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
+    $params = [(int) $productId];
+
+    if ($limit !== null) {
+        $query .= " LIMIT " . max(1, (int) $limit);
+    }
+
+    try {
+        return $db->fetchAll($query, $params) ?: [];
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
+ * Get recent product reviews for cross-storefront testimonial surfaces.
+ */
+function getRecentProductTestimonials($limit = null) {
+    global $db;
+
+    ensureProductReviewSupport();
+
+    if (!isset($db)) {
+        return [];
+    }
+
+    $query = "SELECT r.*, u.name AS reviewer_name, u.profile_image AS reviewer_profile_image,
+                     p.name AS product_name, p.category, p.frame_target
+              FROM reviews r
+              LEFT JOIN users u ON r.user_id = u.id
+              LEFT JOIN products p ON r.product_id = p.id
+              WHERE p.id IS NOT NULL AND p.is_active = 1
+              ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
+
+    if ($limit !== null) {
+        $query .= " LIMIT " . max(1, (int) $limit);
+    }
+
+    try {
+        return $db->fetchAll($query) ?: [];
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+/**
  * Get approved customer reviews for public display.
  */
 function getApprovedCustomerReviews($limit = null) {
@@ -2286,6 +2626,8 @@ function getCustomerReviewSummary() {
  */
 function getProductRating($productId) {
     global $db;
+
+    ensureProductReviewSupport();
     
     $result = $db->fetch(
         "SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE product_id = ?",

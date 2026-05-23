@@ -1,6 +1,6 @@
 <?php
 /**
- * Bealet Website - Admin Reviews Management
+ * Bealet Website - Admin Testimonials Management
  */
 
 require_once __DIR__ . '/../inc/config.php';
@@ -40,9 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_review'])) {
             );
 
             createLog('ADMIN_REVIEW_UPDATED', 'Admin updated customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Review updated successfully.');
+            setFlashMessage('success', 'Testimonial updated successfully.');
         } else {
-            setFlashMessage('error', 'Please complete the review form correctly before saving.');
+            setFlashMessage('error', 'Please complete the testimonial form correctly before saving.');
         }
     }
 
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_review'])) {
         if ($reviewId > 0) {
             $db->delete("DELETE FROM customer_reviews WHERE id = ?", [$reviewId]);
             createLog('ADMIN_REVIEW_DELETED', 'Admin deleted customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Review deleted successfully.');
+            setFlashMessage('success', 'Testimonial deleted successfully.');
         }
     }
 
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_review_approva
                 ($approveValue === 1 ? 'Admin approved customer review #' : 'Admin moved customer review back to pending #') . $reviewId,
                 $_SESSION['user_id'] ?? null
             );
-            setFlashMessage('success', $approveValue === 1 ? 'Review approved successfully.' : 'Review moved back to pending.');
+            setFlashMessage('success', $approveValue === 1 ? 'Testimonial approved successfully.' : 'Testimonial moved back to pending.');
         }
     }
 
@@ -118,7 +118,7 @@ require_once __DIR__ . '/inc/header.php';
 <div class="container-fluid py-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2 class="mb-1">Customer Reviews</h2>
+            <h2 class="mb-1">Customer Testimonials</h2>
             <p class="text-muted mb-0">Approve, polish, or remove customer comments before they appear on the public site.</p>
         </div>
         <div class="d-flex flex-wrap gap-2">
@@ -132,7 +132,7 @@ require_once __DIR__ . '/inc/header.php';
     <?php if ($editingReview): ?>
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Edit Review</h5>
+            <h5 class="mb-0">Edit Testimonial</h5>
             <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-sm btn-outline-secondary">Close</a>
         </div>
         <div class="card-body">
@@ -173,7 +173,7 @@ require_once __DIR__ . '/inc/header.php';
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary">Save Review</button>
+                    <button type="submit" class="btn btn-primary">Save Testimonial</button>
                     <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
@@ -183,7 +183,7 @@ require_once __DIR__ . '/inc/header.php';
 
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">Review Queue</h5>
+            <h5 class="mb-0">Testimonial Queue</h5>
         </div>
         <div class="card-body">
             <?php if (!empty($reviews)): ?>
@@ -240,11 +240,11 @@ require_once __DIR__ . '/inc/header.php';
                                         <input type="hidden" name="review_id" value="<?php echo (int) $review['id']; ?>">
                                         <input type="hidden" name="approve_value" value="<?php echo !empty($review['is_approved']) ? '0' : '1'; ?>">
                                         <button type="submit" class="btn btn-sm <?php echo !empty($review['is_approved']) ? 'btn-outline-warning' : 'btn-outline-success'; ?>">
-                                            <?php echo !empty($review['is_approved']) ? 'Unapprove' : 'Approve'; ?>
+                                            <?php echo !empty($review['is_approved']) ? 'Unpublish' : 'Publish'; ?>
                                         </button>
                                     </form>
                                     <a href="<?php echo APP_URL; ?>/admin/reviews.php?edit=<?php echo (int) $review['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <form method="POST" onsubmit="return confirmDelete('Delete this customer review?');">
+                                    <form method="POST" onsubmit="return confirmDelete('Delete this customer testimonial?');">
                                         <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                         <input type="hidden" name="delete_review" value="1">
                                         <input type="hidden" name="review_id" value="<?php echo (int) $review['id']; ?>">
@@ -258,7 +258,7 @@ require_once __DIR__ . '/inc/header.php';
                 </table>
             </div>
             <?php else: ?>
-            <p class="text-muted mb-0">No customer reviews have been submitted yet.</p>
+            <p class="text-muted mb-0">No customer testimonials have been submitted yet.</p>
             <?php endif; ?>
         </div>
     </div>
