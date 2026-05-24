@@ -567,6 +567,8 @@ foreach ($products as $product) {
                             <?php $productId = (int) $product['id']; ?>
                             <?php $galleryImages = getProductGalleryImages($productId, $product); ?>
                             <?php $productTryOnLink = getProductTryOnLink($product); ?>
+                            <?php $productImageLabel = formatProductCategoryLabel($product['category'] ?? ''); ?>
+                            <?php $productImageLabelClass = 'product-image-label--' . preg_replace('/[^a-z0-9]+/i', '-', strtolower((string) ($product['category'] ?? 'other'))); ?>
                             <?php
                             $productPayloadJson = htmlspecialchars(
                                 json_encode(
@@ -586,6 +588,7 @@ foreach ($products as $product) {
                                 <div class="card product-card h-100">
                                     <?php if (count($galleryImages) > 1): ?>
                                     <div id="productGallery<?php echo (int) $product['id']; ?>" class="carousel slide product-gallery-carousel" data-bs-interval="false">
+                                        <span class="product-image-label <?php echo sanitize($productImageLabelClass); ?>"><?php echo sanitize($productImageLabel); ?></span>
                                         <div class="carousel-inner">
                                             <?php foreach ($galleryImages as $imageIndex => $galleryImage): ?>
                                             <div class="carousel-item <?php echo $imageIndex === 0 ? 'active' : ''; ?>">
@@ -606,7 +609,10 @@ foreach ($products as $product) {
                                         </div>
                                     </div>
                                     <?php else: ?>
-                                    <img src="<?php echo $galleryImages[0] ?? getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                                    <div class="product-image-stage">
+                                        <span class="product-image-label <?php echo sanitize($productImageLabelClass); ?>"><?php echo sanitize($productImageLabel); ?></span>
+                                        <img src="<?php echo $galleryImages[0] ?? getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                                    </div>
                                     <?php endif; ?>
                                     <div class="product-info">
                                         <div class="product-name"><?php echo sanitize($product['name']); ?></div>

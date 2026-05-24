@@ -410,6 +410,8 @@ $introVideoUrl = getIntroVideoUrl();
                 $featuredProductId = (int) $product['id'];
                 $featuredGalleryImages = getProductGalleryImages($featuredProductId, $product);
                 $productTryOnLink = getProductTryOnLink($product);
+                $productImageLabel = formatProductCategoryLabel($product['category'] ?? '');
+                $productImageLabelClass = 'product-image-label--' . preg_replace('/[^a-z0-9]+/i', '-', strtolower((string) ($product['category'] ?? 'other')));
                 $quickProductPayload = [
                     'id' => $featuredProductId,
                     'name' => (string) $product['name'],
@@ -423,6 +425,7 @@ $introVideoUrl = getIntroVideoUrl();
                     <div class="card product-card">
                         <?php if (count($featuredGalleryImages) > 1): ?>
                         <div id="featuredProductGallery<?php echo $featuredProductId; ?>" class="carousel slide product-gallery-carousel featured-product-gallery-carousel" data-bs-interval="false">
+                            <span class="product-image-label <?php echo sanitize($productImageLabelClass); ?>"><?php echo sanitize($productImageLabel); ?></span>
                             <div class="carousel-inner">
                                 <?php foreach ($featuredGalleryImages as $imageIndex => $galleryImage): ?>
                                 <div class="carousel-item <?php echo $imageIndex === 0 ? 'active' : ''; ?>">
@@ -443,7 +446,10 @@ $introVideoUrl = getIntroVideoUrl();
                             </div>
                         </div>
                         <?php else: ?>
-                        <img src="<?php echo $featuredGalleryImages[0] ?? getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                        <div class="product-image-stage">
+                            <span class="product-image-label <?php echo sanitize($productImageLabelClass); ?>"><?php echo sanitize($productImageLabel); ?></span>
+                            <img src="<?php echo $featuredGalleryImages[0] ?? getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                        </div>
                         <?php endif; ?>
                         <div class="product-info">
                             <div class="product-name"><?php echo sanitize($product['name']); ?></div>

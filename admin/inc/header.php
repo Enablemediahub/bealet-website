@@ -36,6 +36,9 @@ $pageTitleMap = [
 $currentPageTitle = $pageTitleMap[$currentScript] ?? 'Admin Panel';
 $profileActive = $currentScript === 'profile.php' ? 'active' : '';
 $adminCssVersion = @filemtime(__DIR__ . '/../../assets/css/admin.css') ?: time();
+$faviconPath = __DIR__ . '/../../assets/images/favicon.png';
+$faviconUrl = APP_URL . '/assets/images/favicon.png';
+$faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) : '1';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,6 +51,8 @@ $adminCssVersion = @filemtime(__DIR__ . '/../../assets/css/admin.css') ?: time()
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css">
     <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/admin.css?v=<?php echo $adminCssVersion; ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
+    <link rel="apple-touch-icon" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
     <script>window.BASE_URL = '<?php echo APP_URL; ?>';</script>
 </head>
 <body class="admin-body">
@@ -124,7 +129,7 @@ $adminCssVersion = @filemtime(__DIR__ . '/../../assets/css/admin.css') ?: time()
                     <i class="fas fa-envelope"></i>
                     <span>Messages</span>
                 </a>
-                <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'reviews.php') !== false ? 'active' : ''; ?>">
+                <a href="reviews.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'reviews.php') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-star-half-stroke"></i>
                     <span>Reviews</span>
                 </a>

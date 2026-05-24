@@ -505,6 +505,37 @@ a:hover {
     background: var(--light);
 }
 
+.product-image-stage {
+    position: relative;
+    background: var(--light);
+}
+
+.product-image-label {
+    position: absolute;
+    top: 0.9rem;
+    left: 0.9rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    max-width: calc(100% - 1.8rem);
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.82);
+    color: #ffffff;
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.product-image-label--premium {
+    background: linear-gradient(135deg, #d4a72c 0%, #b8860b 48%, #8c6a08 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 28px rgba(184, 134, 11, 0.28);
+}
+
 .product-gallery-carousel .carousel-control-prev,
 .product-gallery-carousel .carousel-control-next {
     width: 42px;

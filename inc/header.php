@@ -21,6 +21,9 @@ $companyName = getCompanyName();
 $companyTagline = getCompanyTagline();
 $displayTagline = $companyTagline !== '' ? $companyTagline : 'Premium Eyewear and Optical Care';
 $logoUrl = getSiteLogoUrl();
+$faviconPath = __DIR__ . '/../assets/images/favicon.png';
+$faviconUrl = APP_URL . '/assets/images/favicon.png';
+$faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) : '1';
 $styleCssPath = __DIR__ . '/../assets/css/style.css';
 $styleCssVersion = file_exists($styleCssPath) ? (string) filemtime($styleCssPath) : '1';
 $currentPath = basename($_SERVER['PHP_SELF'] ?? '');
@@ -71,7 +74,9 @@ $primaryNav = [
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css?v=<?php echo $styleCssVersion; ?>">
     <link rel="manifest" href="<?php echo APP_URL; ?>/manifest.webmanifest">
-    <link rel="apple-touch-icon" href="<?php echo $logoUrl; ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
+    <link rel="apple-touch-icon" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
 </head>
 <body>
     <script>window.BASE_URL = '<?php echo APP_URL; ?>';</script>

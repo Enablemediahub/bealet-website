@@ -15,9 +15,12 @@ global $db;
 
 ensureCustomerReviewsTable();
 ensureProductReviewSupport();
+$adminReviewsUrl = 'reviews.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_review'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try the testimonial update again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         $reviewerName = trim((string) ($_POST['reviewer_name'] ?? ''));
         $reviewerEmail = trim((string) ($_POST['reviewer_email'] ?? ''));
@@ -26,68 +29,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_review'])) {
         $isApproved = isset($_POST['is_approved']) ? 1 : 0;
 
         if ($reviewId > 0 && $reviewerName !== '' && $comment !== '' && $rating >= 1 && $rating <= 5) {
-            $db->update(
-                "UPDATE customer_reviews
-                 SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, is_approved = ?, updated_at = NOW()
-                 WHERE id = ?",
-                [
-                    $reviewerName,
-                    $reviewerEmail !== '' ? $reviewerEmail : null,
-                    $rating,
-                    $comment,
-                    $isApproved,
-                    $reviewId,
-                ]
-            );
+            try {
+                $db->update(
+                    "UPDATE customer_reviews
+                     SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, is_approved = ?, updated_at = NOW()
+                     WHERE id = ?",
+                    [
+                        $reviewerName,
+                        $reviewerEmail !== '' ? $reviewerEmail : null,
+                        $rating,
+                        $comment,
+                        $isApproved,
+                        $reviewId,
+                    ]
+                );
 
-            createLog('ADMIN_REVIEW_UPDATED', 'Admin updated customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Testimonial updated successfully.');
+                createLog('ADMIN_REVIEW_UPDATED', 'Admin updated customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
+                setFlashMessage('success', 'Testimonial updated successfully.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The testimonial could not be updated right now. Please try again.');
+            }
         } else {
             setFlashMessage('error', 'Please complete the testimonial form correctly before saving.');
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php');
+    redirect($adminReviewsUrl);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_review'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try deleting the testimonial again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         if ($reviewId > 0) {
-            $db->delete("DELETE FROM customer_reviews WHERE id = ?", [$reviewId]);
-            createLog('ADMIN_REVIEW_DELETED', 'Admin deleted customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Testimonial deleted successfully.');
+            try {
+                $db->delete("DELETE FROM customer_reviews WHERE id = ?", [$reviewId]);
+                createLog('ADMIN_REVIEW_DELETED', 'Admin deleted customer review #' . $reviewId, $_SESSION['user_id'] ?? null);
+                setFlashMessage('success', 'Testimonial deleted successfully.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The testimonial could not be deleted right now. Please try again.');
+            }
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php');
+    redirect($adminReviewsUrl);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_review_approval'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try publishing the testimonial again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         $approveValue = isset($_POST['approve_value']) ? (int) $_POST['approve_value'] : 0;
 
         if ($reviewId > 0) {
-            $db->update(
-                "UPDATE customer_reviews SET is_approved = ?, updated_at = NOW() WHERE id = ?",
-                [$approveValue === 1 ? 1 : 0, $reviewId]
-            );
+            try {
+                $db->update(
+                    "UPDATE customer_reviews SET is_approved = ?, updated_at = NOW() WHERE id = ?",
+                    [$approveValue === 1 ? 1 : 0, $reviewId]
+                );
 
-            createLog(
-                $approveValue === 1 ? 'ADMIN_REVIEW_APPROVED' : 'ADMIN_REVIEW_UNAPPROVED',
-                ($approveValue === 1 ? 'Admin approved customer review #' : 'Admin moved customer review back to pending #') . $reviewId,
-                $_SESSION['user_id'] ?? null
-            );
-            setFlashMessage('success', $approveValue === 1 ? 'Testimonial approved successfully.' : 'Testimonial moved back to pending.');
+                createLog(
+                    $approveValue === 1 ? 'ADMIN_REVIEW_APPROVED' : 'ADMIN_REVIEW_UNAPPROVED',
+                    ($approveValue === 1 ? 'Admin approved customer review #' : 'Admin moved customer review back to pending #') . $reviewId,
+                    $_SESSION['user_id'] ?? null
+                );
+                setFlashMessage('success', $approveValue === 1 ? 'Testimonial approved successfully.' : 'Testimonial moved back to pending.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The testimonial approval could not be changed right now. Please try again.');
+            }
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php');
+    redirect($adminReviewsUrl);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product_review'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try the product review update again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         $reviewerName = trim((string) ($_POST['reviewer_name'] ?? ''));
         $reviewerEmail = trim((string) ($_POST['reviewer_email'] ?? ''));
@@ -96,64 +117,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product_review']
         $isApproved = isset($_POST['is_approved']) ? 1 : 0;
 
         if ($reviewId > 0 && $reviewerName !== '' && $comment !== '' && $rating >= 1 && $rating <= 5) {
-            $db->update(
-                "UPDATE reviews
-                 SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, is_approved = ?, updated_at = NOW()
-                 WHERE id = ?",
-                [
-                    $reviewerName,
-                    $reviewerEmail !== '' ? $reviewerEmail : null,
-                    $rating,
-                    $comment,
-                    $isApproved,
-                    $reviewId,
-                ]
-            );
+            try {
+                $db->update(
+                    "UPDATE reviews
+                     SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, is_approved = ?, updated_at = NOW()
+                     WHERE id = ?",
+                    [
+                        $reviewerName,
+                        $reviewerEmail !== '' ? $reviewerEmail : null,
+                        $rating,
+                        $comment,
+                        $isApproved,
+                        $reviewId,
+                    ]
+                );
 
-            createLog('ADMIN_PRODUCT_REVIEW_UPDATED', 'Admin updated product review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Product review updated successfully.');
+                createLog('ADMIN_PRODUCT_REVIEW_UPDATED', 'Admin updated product review #' . $reviewId, $_SESSION['user_id'] ?? null);
+                setFlashMessage('success', 'Product review updated successfully.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The product review could not be updated right now. Please try again.');
+            }
         } else {
             setFlashMessage('error', 'Please complete the product review form correctly before saving.');
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php?edit_type=product&edit=' . (int) ($_POST['review_id'] ?? 0));
+    redirect($adminReviewsUrl . '?edit_type=product&edit=' . (int) ($_POST['review_id'] ?? 0));
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product_review'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try deleting the product review again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         if ($reviewId > 0) {
-            $db->delete("DELETE FROM reviews WHERE id = ?", [$reviewId]);
-            createLog('ADMIN_PRODUCT_REVIEW_DELETED', 'Admin deleted product review #' . $reviewId, $_SESSION['user_id'] ?? null);
-            setFlashMessage('success', 'Product review deleted successfully.');
+            try {
+                $db->delete("DELETE FROM reviews WHERE id = ?", [$reviewId]);
+                createLog('ADMIN_PRODUCT_REVIEW_DELETED', 'Admin deleted product review #' . $reviewId, $_SESSION['user_id'] ?? null);
+                setFlashMessage('success', 'Product review deleted successfully.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The product review could not be deleted right now. Please try again.');
+            }
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php');
+    redirect($adminReviewsUrl);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_product_review_approval'])) {
-    if (verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        setFlashMessage('error', 'Your session token expired. Please try publishing the product review again.');
+    } else {
         $reviewId = (int) ($_POST['review_id'] ?? 0);
         $approveValue = isset($_POST['approve_value']) ? (int) $_POST['approve_value'] : 0;
 
         if ($reviewId > 0) {
-            $db->update(
-                "UPDATE reviews SET is_approved = ?, updated_at = NOW() WHERE id = ?",
-                [$approveValue === 1 ? 1 : 0, $reviewId]
-            );
+            try {
+                $db->update(
+                    "UPDATE reviews SET is_approved = ?, updated_at = NOW() WHERE id = ?",
+                    [$approveValue === 1 ? 1 : 0, $reviewId]
+                );
 
-            createLog(
-                $approveValue === 1 ? 'ADMIN_PRODUCT_REVIEW_APPROVED' : 'ADMIN_PRODUCT_REVIEW_UNAPPROVED',
-                ($approveValue === 1 ? 'Admin approved product review #' : 'Admin moved product review back to pending #') . $reviewId,
-                $_SESSION['user_id'] ?? null
-            );
-            setFlashMessage('success', $approveValue === 1 ? 'Product review approved successfully.' : 'Product review moved back to pending.');
+                createLog(
+                    $approveValue === 1 ? 'ADMIN_PRODUCT_REVIEW_APPROVED' : 'ADMIN_PRODUCT_REVIEW_UNAPPROVED',
+                    ($approveValue === 1 ? 'Admin approved product review #' : 'Admin moved product review back to pending #') . $reviewId,
+                    $_SESSION['user_id'] ?? null
+                );
+                setFlashMessage('success', $approveValue === 1 ? 'Product review approved successfully.' : 'Product review moved back to pending.');
+            } catch (Throwable $e) {
+                setFlashMessage('error', 'The product review approval could not be changed right now. Please try again.');
+            }
         }
     }
 
-    redirect(APP_URL . '/admin/reviews.php');
+    redirect($adminReviewsUrl);
 }
 
 $editType = sanitize($_GET['edit_type'] ?? 'customer');
@@ -235,7 +272,7 @@ require_once __DIR__ . '/inc/header.php';
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Edit Testimonial</h5>
-            <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-sm btn-outline-secondary">Close</a>
+            <a href="<?php echo $adminReviewsUrl; ?>" class="btn btn-sm btn-outline-secondary">Close</a>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -276,7 +313,7 @@ require_once __DIR__ . '/inc/header.php';
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
                     <button type="submit" class="btn btn-primary">Save Testimonial</button>
-                    <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="<?php echo $adminReviewsUrl; ?>" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -287,7 +324,7 @@ require_once __DIR__ . '/inc/header.php';
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Edit Product Review</h5>
-            <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-sm btn-outline-secondary">Close</a>
+            <a href="<?php echo $adminReviewsUrl; ?>" class="btn btn-sm btn-outline-secondary">Close</a>
         </div>
         <div class="card-body">
             <form method="POST">
@@ -347,7 +384,7 @@ require_once __DIR__ . '/inc/header.php';
                     <?php if (!empty($editingProductReview['product_id'])): ?>
                     <a href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo (int) $editingProductReview['product_id']; ?>" class="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">Open Product</a>
                     <?php endif; ?>
-                    <a href="<?php echo APP_URL; ?>/admin/reviews.php" class="btn btn-outline-secondary">Cancel</a>
+                    <a href="<?php echo $adminReviewsUrl; ?>" class="btn btn-outline-secondary">Cancel</a>
                 </div>
             </form>
         </div>
@@ -426,7 +463,7 @@ require_once __DIR__ . '/inc/header.php';
                                                     <?php echo !empty($review['is_approved']) ? 'Unpublish' : 'Publish'; ?>
                                                 </button>
                                             </form>
-                                            <a href="<?php echo APP_URL; ?>/admin/reviews.php?edit=<?php echo (int) $review['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a href="<?php echo $adminReviewsUrl; ?>?edit=<?php echo (int) $review['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                             <form method="POST" onsubmit="return confirmDelete('Delete this customer testimonial?');">
                                                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                                 <input type="hidden" name="delete_review" value="1">
@@ -525,7 +562,7 @@ require_once __DIR__ . '/inc/header.php';
                                                     <?php echo !empty($review['is_approved']) ? 'Unpublish' : 'Publish'; ?>
                                                 </button>
                                             </form>
-                                            <a href="<?php echo APP_URL; ?>/admin/reviews.php?edit_type=product&edit=<?php echo (int) $review['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a href="<?php echo $adminReviewsUrl; ?>?edit_type=product&edit=<?php echo (int) $review['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                             <?php if (!empty($review['product_id'])): ?>
                                             <a href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo (int) $review['product_id']; ?>" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener noreferrer">Open</a>
                                             <?php endif; ?>

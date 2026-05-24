@@ -2376,6 +2376,46 @@ function ensureCustomerReviewsTable() {
         // Keep the site available even if the reviews table cannot initialize.
     }
 
+    try {
+        $reviewColumns = $db->fetchAll("SHOW COLUMNS FROM customer_reviews");
+        $reviewColumnMap = [];
+        foreach ($reviewColumns as $column) {
+            if (!empty($column['Field'])) {
+                $reviewColumnMap[$column['Field']] = true;
+            }
+        }
+
+        if (!isset($reviewColumnMap['reviewer_name'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN reviewer_name VARCHAR(255) NOT NULL DEFAULT 'Customer' AFTER user_id");
+        }
+
+        if (!isset($reviewColumnMap['reviewer_email'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN reviewer_email VARCHAR(255) DEFAULT NULL AFTER reviewer_name");
+        }
+
+        if (!isset($reviewColumnMap['profile_image'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER reviewer_email");
+        }
+
+        if (!isset($reviewColumnMap['rating'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN rating TINYINT UNSIGNED NOT NULL DEFAULT 5 AFTER profile_image");
+        }
+
+        if (!isset($reviewColumnMap['comment'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN comment TEXT NOT NULL AFTER rating");
+        }
+
+        if (!isset($reviewColumnMap['is_approved'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN is_approved TINYINT(1) NOT NULL DEFAULT 0 AFTER comment");
+        }
+
+        if (!isset($reviewColumnMap['updated_at'])) {
+            $db->update("ALTER TABLE customer_reviews ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at");
+        }
+    } catch (Throwable $e) {
+        // Ignore partial upgrade issues so review pages keep loading.
+    }
+
     $initialized = true;
 }
 
