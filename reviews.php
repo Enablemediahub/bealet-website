@@ -16,13 +16,13 @@ $existingReview = $currentUser ? getCustomerReviewByUserId((int) $currentUser['i
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
-    if (!isLoggedIn() || !$currentUser) {
-        $errors[] = 'Please login or register before leaving a testimonial.';
-    } elseif (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $errors[] = 'Invalid request. Please try again.';
     } else {
         $rating = (int) ($_POST['rating'] ?? 0);
         $comment = trim((string) ($_POST['comment'] ?? ''));
+        $guestName = trim((string) ($_POST['reviewer_name'] ?? ''));
+        $guestEmail = trim((string) ($_POST['reviewer_email'] ?? ''));
         $profileImagePath = (string) ($currentUser['profile_image'] ?? '');
 
         if ($rating < 1 || $rating > 5) {
@@ -35,6 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
             $errors[] = 'Please make your review a little more descriptive.';
         } elseif (mb_strlen($comment) > 1500) {
             $errors[] = 'Please keep your review under 1500 characters.';
+        }
+
+        if (!$currentUser) {
+            if ($guestName === '') {
+                $errors[] = 'Please enter your name before submitting a testimonial.';
+            }
+
+            if ($guestEmail === '') {
+                $errors[] = 'Please enter your email address before submitting a testimonial.';
+            } elseif (!validateEmail($guestEmail)) {
+                $errors[] = 'Please enter a valid email address.';
+            }
         }
 
         $profileImageError = (int) ($_FILES['profile_image']['error'] ?? UPLOAD_ERR_NO_FILE);
@@ -52,14 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
         }
 
         if (empty($errors)) {
-            if ($profileImagePath !== '') {
+            if ($currentUser && $profileImagePath !== '') {
                 $db->update(
                     "UPDATE users SET profile_image = ?, updated_at = NOW() WHERE id = ?",
                     [$profileImagePath, (int) $currentUser['id']]
                 );
             }
 
-            $existingReview = getCustomerReviewByUserId((int) $currentUser['id']);
+            $reviewerName = $currentUser ? (string) ($currentUser['name'] ?? '') : $guestName;
+            $reviewerEmail = $currentUser ? (string) ($currentUser['email'] ?? '') : $guestEmail;
+            $existingReview = $currentUser ? getCustomerReviewByUserId((int) $currentUser['id']) : null;
 
             if ($existingReview) {
                 $db->update(
@@ -67,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
                      SET reviewer_name = ?, reviewer_email = ?, profile_image = ?, rating = ?, comment = ?, is_approved = 0, updated_at = NOW()
                      WHERE id = ?",
                     [
-                        (string) ($currentUser['name'] ?? ''),
-                        (string) ($currentUser['email'] ?? ''),
+                        $reviewerName,
+                        $reviewerEmail,
                         $profileImagePath !== '' ? $profileImagePath : null,
                         $rating,
                         $comment,
@@ -80,9 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
                     "INSERT INTO customer_reviews (user_id, reviewer_name, reviewer_email, profile_image, rating, comment, is_approved)
                      VALUES (?, ?, ?, ?, ?, ?, 0)",
                     [
-                        (int) $currentUser['id'],
-                        (string) ($currentUser['name'] ?? ''),
-                        (string) ($currentUser['email'] ?? ''),
+                        $currentUser ? (int) $currentUser['id'] : null,
+                        $reviewerName,
+                        $reviewerEmail,
                         $profileImagePath !== '' ? $profileImagePath : null,
                         $rating,
                         $comment,
@@ -90,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
                 );
             }
 
-            createLog('CUSTOMER_REVIEW_SUBMITTED', 'Customer testimonial submitted for moderation', (int) $currentUser['id']);
+            createLog('CUSTOMER_REVIEW_SUBMITTED', 'Customer testimonial submitted for moderation', $currentUser['id'] ?? null);
             setFlashMessage('success', 'Your testimonial has been saved and sent for admin approval.');
             redirect(APP_URL . '/reviews');
         }
@@ -107,6 +121,12 @@ $formRating = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_revi
 $formComment = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])
     ? trim((string) ($_POST['comment'] ?? ''))
     : (string) ($existingReview['comment'] ?? '');
+$formReviewerName = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])
+    ? trim((string) ($_POST['reviewer_name'] ?? ''))
+    : (string) ($currentUser['name'] ?? ($existingReview['reviewer_name'] ?? ''));
+$formReviewerEmail = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])
+    ? trim((string) ($_POST['reviewer_email'] ?? ''))
+    : (string) ($currentUser['email'] ?? ($existingReview['reviewer_email'] ?? ''));
 $viewerImageUrl = $currentUser
     ? getUserProfileImageUrl($currentUser['profile_image'] ?? ($existingReview['profile_image'] ?? ''), $currentUser['name'] ?? 'Customer')
     : getUserProfileImageUrl('', 'Customer');
@@ -122,7 +142,7 @@ require_once __DIR__ . '/inc/header.php';
                     <span class="hero-kicker"><i class="fas fa-star me-2"></i>Customer Stories</span>
                     <h1 class="mt-3 mb-3">See what customers are saying about their Bealet experience.</h1>
                     <p class="lead text-muted mb-0">
-                        Browse recent customer feedback, then add your own star rating and comment once you have a registered account.
+                        Browse recent customer feedback, then add your own star rating and comment whether you have an account or not.
                     </p>
                 </div>
                 <div class="col-lg-5">
@@ -156,7 +176,7 @@ require_once __DIR__ . '/inc/header.php';
                         <img src="<?php echo sanitize($viewerImageUrl); ?>" alt="Your profile" class="review-avatar review-avatar-lg">
                         <div>
                             <h2 class="h4 mb-1">Add Your Testimonial</h2>
-                            <p class="text-muted mb-0">Registered customers can leave one testimonial and update it anytime.</p>
+                            <p class="text-muted mb-0">Customers and guests can both leave testimonials. Logged-in customers can still update their own entry anytime.</p>
                         </div>
                     </div>
 
@@ -168,10 +188,20 @@ require_once __DIR__ . '/inc/header.php';
                     </div>
                     <?php endif; ?>
 
-                    <?php if ($currentUser): ?>
                     <form method="POST" enctype="multipart/form-data" class="review-form">
                         <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                         <input type="hidden" name="submit_review" value="1">
+
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" name="reviewer_name" class="form-control" value="<?php echo sanitize($formReviewerName); ?>" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Your Email</label>
+                                <input type="email" name="reviewer_email" class="form-control" value="<?php echo sanitize($formReviewerEmail); ?>" required>
+                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <label class="form-label">Your Rating</label>
@@ -200,18 +230,8 @@ require_once __DIR__ . '/inc/header.php';
                             <?php echo $existingReview ? 'Update Testimonial' : 'Submit Testimonial'; ?>
                         </button>
                     </form>
-                    <?php else: ?>
-                    <div class="review-login-card">
-                        <p class="mb-3">Login or create an account to leave a testimonial with your profile image.</p>
-                        <div class="d-grid gap-2">
-                            <a href="<?php echo APP_URL; ?>/login" class="btn btn-primary">
-                                <i class="fas fa-sign-in-alt me-2"></i> Login
-                            </a>
-                            <a href="<?php echo APP_URL; ?>/register" class="btn btn-outline-primary">
-                                <i class="fas fa-user-plus me-2"></i> Register
-                            </a>
-                        </div>
-                    </div>
+                    <?php if (!$currentUser): ?>
+                    <p class="text-muted small mt-3 mb-0">Guest testimonials go into the same approval queue as customer account testimonials before they appear publicly.</p>
                     <?php endif; ?>
                 </div>
             </div>

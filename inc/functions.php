@@ -37,6 +37,30 @@ function sanitize($input) {
 }
 
 /**
+ * Decode text that may have been HTML-escaped before being stored.
+ */
+function decodeStoredText($input) {
+    if (is_array($input)) {
+        return array_map('decodeStoredText', $input);
+    }
+
+    if ($input === null) {
+        return '';
+    }
+
+    $value = (string) $input;
+    for ($i = 0; $i < 3; $i++) {
+        $decoded = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if ($decoded === $value) {
+            break;
+        }
+        $value = $decoded;
+    }
+
+    return $value;
+}
+
+/**
  * Validate Email
  */
 function validateEmail($email) {
@@ -1216,10 +1240,66 @@ function getProductGalleryImages($productId, $product = null) {
 function getProductCategoryOptions() {
     return [
         'frames' => 'Frames',
+        'premium' => 'Premium',
+        'assorted' => 'Assorted',
+        'casuals' => 'Casuals',
         'lenses' => 'Lenses',
         'contact_lenses' => 'Contact Lenses',
         'accessories' => 'Accessories',
     ];
+}
+
+/**
+ * Normalize product category values so legacy labels still map to canonical keys.
+ */
+function normalizeProductCategoryKey($category) {
+    $category = strtolower(trim(decodeStoredText((string) $category)));
+    $category = preg_replace('/[^a-z0-9]+/', '_', $category);
+    $category = trim((string) $category, '_');
+
+    $aliases = [
+        'frame' => 'frames',
+        'frames' => 'frames',
+        'premium' => 'premium',
+        'assorted' => 'assorted',
+        'casual' => 'casuals',
+        'casuals' => 'casuals',
+        'lense' => 'lenses',
+        'lens' => 'lenses',
+        'lenses' => 'lenses',
+        'contact_lens' => 'contact_lenses',
+        'contact_lenses' => 'contact_lenses',
+        'accessory' => 'accessories',
+        'accessories' => 'accessories',
+    ];
+
+    return $aliases[$category] ?? $category;
+}
+
+/**
+ * Ensure the product category column can store custom category keys.
+ */
+function ensureProductCategoryStorageSupport() {
+    global $db;
+
+    static $initialized = false;
+
+    if ($initialized || !isset($db)) {
+        return;
+    }
+
+    try {
+        $categoryColumn = $db->fetch("SHOW COLUMNS FROM products LIKE 'category'");
+        $columnType = strtolower((string) ($categoryColumn['Type'] ?? ''));
+
+        if ($columnType !== '' && str_starts_with($columnType, 'enum(')) {
+            $db->update("ALTER TABLE products MODIFY COLUMN category VARCHAR(50) NOT NULL");
+        }
+    } catch (Throwable $e) {
+        // Keep product pages available even if the schema upgrade cannot run in this pass.
+    }
+
+    $initialized = true;
 }
 
 /**
@@ -1238,7 +1318,7 @@ function getProductAudienceOptions() {
  * Human-readable product category label.
  */
 function formatProductCategoryLabel($category) {
-    $category = trim((string) $category);
+    $category = normalizeProductCategoryKey($category);
     $options = getProductCategoryOptions();
 
     if (isset($options[$category])) {
@@ -2316,10 +2396,13 @@ function ensureProductReviewSupport() {
             "CREATE TABLE IF NOT EXISTS reviews (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 product_id INT NOT NULL,
-                user_id INT NOT NULL,
+                user_id INT NULL,
+                reviewer_name VARCHAR(255) DEFAULT NULL,
+                reviewer_email VARCHAR(255) DEFAULT NULL,
                 rating TINYINT UNSIGNED NOT NULL DEFAULT 5,
                 comment TEXT DEFAULT NULL,
                 review_image VARCHAR(255) DEFAULT NULL,
+                is_approved TINYINT(1) NOT NULL DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
@@ -2345,9 +2428,23 @@ function ensureProductReviewSupport() {
             $db->update("ALTER TABLE reviews ADD COLUMN review_image VARCHAR(255) DEFAULT NULL AFTER comment");
         }
 
+        if (!isset($reviewColumnMap['reviewer_name'])) {
+            $db->update("ALTER TABLE reviews ADD COLUMN reviewer_name VARCHAR(255) DEFAULT NULL AFTER user_id");
+        }
+
+        if (!isset($reviewColumnMap['reviewer_email'])) {
+            $db->update("ALTER TABLE reviews ADD COLUMN reviewer_email VARCHAR(255) DEFAULT NULL AFTER reviewer_name");
+        }
+
         if (!isset($reviewColumnMap['updated_at'])) {
             $db->update("ALTER TABLE reviews ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER created_at");
         }
+
+        if (!isset($reviewColumnMap['is_approved'])) {
+            $db->update("ALTER TABLE reviews ADD COLUMN is_approved TINYINT(1) NOT NULL DEFAULT 1 AFTER review_image");
+        }
+
+        $db->update("ALTER TABLE reviews MODIFY COLUMN user_id INT NULL");
     } catch (Throwable $e) {
         // Ignore partial upgrade issues to avoid taking down the page.
     }
@@ -2503,7 +2600,7 @@ function getProductReviewByUserId($productId, $userId) {
 /**
  * Get product reviews with user context for storefront display.
  */
-function getProductReviews($productId, $limit = null) {
+function getProductReviews($productId, $limit = null, $includeUnapproved = false) {
     global $db;
 
     ensureProductReviewSupport();
@@ -2512,12 +2609,18 @@ function getProductReviews($productId, $limit = null) {
         return [];
     }
 
-    $query = "SELECT r.*, u.name AS reviewer_name, u.profile_image AS reviewer_profile_image
+    $query = "SELECT r.*, COALESCE(NULLIF(r.reviewer_name, ''), u.name, 'Customer') AS reviewer_name,
+                     u.profile_image AS reviewer_profile_image
               FROM reviews r
               LEFT JOIN users u ON r.user_id = u.id
-              WHERE r.product_id = ?
-              ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
+              WHERE r.product_id = ?";
     $params = [(int) $productId];
+
+    if (!$includeUnapproved) {
+        $query .= " AND COALESCE(r.is_approved, 1) = 1";
+    }
+
+    $query .= " ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
 
     if ($limit !== null) {
         $query .= " LIMIT " . max(1, (int) $limit);
@@ -2533,7 +2636,7 @@ function getProductReviews($productId, $limit = null) {
 /**
  * Get recent product reviews for cross-storefront testimonial surfaces.
  */
-function getRecentProductTestimonials($limit = null) {
+function getRecentProductTestimonials($limit = null, $includeUnapproved = false) {
     global $db;
 
     ensureProductReviewSupport();
@@ -2542,13 +2645,19 @@ function getRecentProductTestimonials($limit = null) {
         return [];
     }
 
-    $query = "SELECT r.*, u.name AS reviewer_name, u.profile_image AS reviewer_profile_image,
+    $query = "SELECT r.*, COALESCE(NULLIF(r.reviewer_name, ''), u.name, 'Customer') AS reviewer_name,
+                     u.profile_image AS reviewer_profile_image,
                      p.name AS product_name, p.category, p.frame_target
               FROM reviews r
               LEFT JOIN users u ON r.user_id = u.id
               LEFT JOIN products p ON r.product_id = p.id
-              WHERE p.id IS NOT NULL AND p.is_active = 1
-              ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
+              WHERE p.id IS NOT NULL AND p.is_active = 1";
+
+    if (!$includeUnapproved) {
+        $query .= " AND COALESCE(r.is_approved, 1) = 1";
+    }
+
+    $query .= " ORDER BY COALESCE(r.updated_at, r.created_at) DESC, r.id DESC";
 
     if ($limit !== null) {
         $query .= " LIMIT " . max(1, (int) $limit);
@@ -2624,15 +2733,19 @@ function getCustomerReviewSummary() {
 /**
  * Get Product Rating
  */
-function getProductRating($productId) {
+function getProductRating($productId, $includeUnapproved = false) {
     global $db;
 
     ensureProductReviewSupport();
     
-    $result = $db->fetch(
-        "SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE product_id = ?",
-        [$productId]
-    );
+    $query = "SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews FROM reviews WHERE product_id = ?";
+    $params = [$productId];
+
+    if (!$includeUnapproved) {
+        $query .= " AND COALESCE(is_approved, 1) = 1";
+    }
+
+    $result = $db->fetch($query, $params);
     
     return [
         'average' => $result['avg_rating'] ? round($result['avg_rating'], 1) : 0,

@@ -47,8 +47,59 @@ $blogPosts = $db->fetchAll(
     "SELECT * FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 3"
 );
 
-$homepageReviews = getApprovedCustomerReviews(3);
-$homepageReviewSummary = getCustomerReviewSummary();
+$homepageRawProductTestimonials = getRecentProductTestimonials(6);
+$homepageAllProductTestimonials = getRecentProductTestimonials(null);
+
+$homepageCustomerReviews = array_map(static function ($review) {
+    $review['review_type'] = 'customer';
+    $review['display_title'] = 'Customer Testimonial';
+    $review['display_image_url'] = getUserProfileImageUrl($review['profile_image'] ?? '', $review['reviewer_name'] ?? 'Customer');
+    $review['display_date'] = $review['updated_at'] ?? $review['created_at'] ?? null;
+
+    return $review;
+}, getApprovedCustomerReviews(6));
+
+$homepageProductTestimonials = array_map(static function ($review) {
+    $review['review_type'] = 'product';
+    $review['display_title'] = !empty($review['product_name']) ? ((string) $review['product_name'] . ' testimonial') : 'Product Testimonial';
+    $review['display_image_url'] = getProductReviewImageUrl($review['review_image'] ?? '');
+    $review['display_date'] = $review['updated_at'] ?? $review['created_at'] ?? null;
+
+    return $review;
+}, $homepageRawProductTestimonials);
+
+$homepageReviews = array_merge($homepageCustomerReviews, $homepageProductTestimonials);
+usort($homepageReviews, static function ($left, $right) {
+    $leftTime = strtotime((string) ($left['display_date'] ?? '')) ?: 0;
+    $rightTime = strtotime((string) ($right['display_date'] ?? '')) ?: 0;
+
+    return $rightTime <=> $leftTime;
+});
+$homepageReviews = array_slice($homepageReviews, 0, 3);
+
+$homepageCustomerReviewSummary = getCustomerReviewSummary();
+$homepageProductReviewCount = count($homepageAllProductTestimonials);
+$homepageTotalPublishedTestimonials = (int) ($homepageCustomerReviewSummary['total_reviews'] ?? 0) + $homepageProductReviewCount;
+$homepageProductRatingTotal = 0;
+$homepageProductRatingWeighted = 0.0;
+
+foreach ($homepageAllProductTestimonials as $productTestimonial) {
+    $productRating = (int) ($productTestimonial['rating'] ?? 0);
+    if ($productRating > 0) {
+        $homepageProductRatingWeighted += $productRating;
+        $homepageProductRatingTotal++;
+    }
+}
+
+$homepageCombinedAverageRating = 0;
+$homepageCustomerReviewTotal = (int) ($homepageCustomerReviewSummary['total_reviews'] ?? 0);
+if (($homepageCustomerReviewTotal + $homepageProductRatingTotal) > 0) {
+    $homepageCombinedAverageRating = (
+        (((float) ($homepageCustomerReviewSummary['average_rating'] ?? 0)) * $homepageCustomerReviewTotal)
+        + $homepageProductRatingWeighted
+    ) / ($homepageCustomerReviewTotal + $homepageProductRatingTotal);
+}
+
 $founderProfile = getFounderProfile();
 $heroSlides = array_values(array_filter(getHeroSlides(), function ($slide) {
     return (int) ($slide['is_active'] ?? 0) === 1;
@@ -356,19 +407,44 @@ $introVideoUrl = getIntroVideoUrl();
             <div class="row g-4">
                 <?php foreach ($featuredProducts as $product): ?>
                 <?php
+                $featuredProductId = (int) $product['id'];
+                $featuredGalleryImages = getProductGalleryImages($featuredProductId, $product);
                 $productTryOnLink = getProductTryOnLink($product);
                 $quickProductPayload = [
-                    'id' => (int) $product['id'],
+                    'id' => $featuredProductId,
                     'name' => (string) $product['name'],
                     'price' => (float) $product['price'],
-                    'description' => (string) ($product['description'] ?? ''),
+                    'description' => decodeStoredText($product['description'] ?? ''),
                     'stock' => (int) ($product['stock'] ?? 0),
                     'image' => getProductImagePath($product),
                 ];
                 ?>
                 <div class="col-md-6 col-lg-4">
                     <div class="card product-card">
-                        <img src="<?php echo getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                        <?php if (count($featuredGalleryImages) > 1): ?>
+                        <div id="featuredProductGallery<?php echo $featuredProductId; ?>" class="carousel slide product-gallery-carousel featured-product-gallery-carousel" data-bs-interval="false">
+                            <div class="carousel-inner">
+                                <?php foreach ($featuredGalleryImages as $imageIndex => $galleryImage): ?>
+                                <div class="carousel-item <?php echo $imageIndex === 0 ? 'active' : ''; ?>">
+                                    <img src="<?php echo $galleryImage; ?>" alt="<?php echo sanitize($product['name']); ?> image <?php echo $imageIndex + 1; ?>" class="product-image">
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#featuredProductGallery<?php echo $featuredProductId; ?>" data-bs-slide="prev" aria-label="Previous image">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#featuredProductGallery<?php echo $featuredProductId; ?>" data-bs-slide="next" aria-label="Next image">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </button>
+                            <div class="product-gallery-dots">
+                                <?php foreach ($featuredGalleryImages as $imageIndex => $galleryImage): ?>
+                                <button type="button" data-bs-target="#featuredProductGallery<?php echo $featuredProductId; ?>" data-bs-slide-to="<?php echo $imageIndex; ?>" class="<?php echo $imageIndex === 0 ? 'active' : ''; ?>" aria-label="View image <?php echo $imageIndex + 1; ?>"></button>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <img src="<?php echo $featuredGalleryImages[0] ?? getProductImagePath($product); ?>" alt="<?php echo sanitize($product['name']); ?>" class="product-image">
+                        <?php endif; ?>
                         <div class="product-info">
                             <div class="product-name"><?php echo sanitize($product['name']); ?></div>
                             <div class="product-price"><?php echo formatCurrency($product['price']); ?></div>
@@ -387,14 +463,14 @@ $introVideoUrl = getIntroVideoUrl();
                             
                             <div class="d-grid gap-2">
                                 <?php if ($productTryOnLink !== ''): ?>
-                                <a class="btn btn-outline-dark" href="<?php echo sanitize($productTryOnLink); ?>">
+                                <a class="btn product-tryon-cta" href="<?php echo sanitize($productTryOnLink); ?>">
                                     <i class="fas fa-vr-cardboard me-2"></i> Try On
                                 </a>
                                 <?php endif; ?>
                                 <button class="btn btn-primary" type="button" onclick='openQuickPurchaseModal(<?php echo json_encode($quickProductPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'>
                                     <i class="fas fa-bolt me-2"></i> Buy It Now
                                 </button>
-                                <a class="btn btn-outline-primary" href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo (int) $product['id']; ?>">
+                                <a class="btn btn-outline-primary" href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo $featuredProductId; ?>" onclick="stopFeaturedProductGalleryAutoplay(this)">
                                     <i class="fas fa-eye me-2"></i> View Product
                                 </a>
                             </div>
@@ -412,13 +488,64 @@ $introVideoUrl = getIntroVideoUrl();
         </div>
     </section>
 
+    <script>
+    (function () {
+        function initializeFeaturedProductGalleries() {
+            if (typeof bootstrap === 'undefined') {
+                return;
+            }
+
+            document.querySelectorAll('.featured-product-gallery-carousel').forEach(function (carouselNode) {
+                var carousel = bootstrap.Carousel.getOrCreateInstance(carouselNode, {
+                    interval: 2400,
+                    ride: false,
+                    pause: false,
+                    wrap: true,
+                    touch: true
+                });
+
+                carousel.cycle();
+
+                carouselNode.addEventListener('mouseenter', function () {
+                    carousel.pause();
+                });
+
+                carouselNode.addEventListener('mouseleave', function () {
+                    carousel.cycle();
+                });
+            });
+        }
+
+        window.stopFeaturedProductGalleryAutoplay = function (button) {
+            if (typeof bootstrap === 'undefined' || !button) {
+                return true;
+            }
+
+            var card = button.closest('.product-card');
+            var carouselNode = card ? card.querySelector('.featured-product-gallery-carousel') : null;
+            if (!carouselNode) {
+                return true;
+            }
+
+            var carousel = bootstrap.Carousel.getInstance(carouselNode);
+            if (carousel) {
+                carousel.pause();
+            }
+
+            return true;
+        };
+
+        document.addEventListener('DOMContentLoaded', initializeFeaturedProductGalleries);
+    })();
+    </script>
+
     <section class="section-spacing pt-0">
         <div class="container-lg">
             <div class="reviews-showcase">
                 <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
                     <div class="section-title text-start mb-0">
                         <h2>What Customers Are Saying</h2>
-                        <p>Verified customer comments with compact profile images and quick star snapshots.</p>
+                        <p>Browse both general testimonials and product-specific feedback from customers who have shopped with Bealet.</p>
                     </div>
                     <a href="<?php echo APP_URL; ?>/reviews" class="btn btn-outline-primary">
                         <i class="fas fa-star me-2"></i> Open Testimonials
@@ -427,16 +554,16 @@ $introVideoUrl = getIntroVideoUrl();
 
                 <div class="reviews-showcase-summary mb-4">
                     <div class="reviews-summary-mini">
-                        <strong><?php echo number_format((float) ($homepageReviewSummary['average_rating'] ?? 0), 1); ?>/5</strong>
-                        <span>Average approved rating</span>
+                        <strong><?php echo number_format($homepageCombinedAverageRating, 1); ?>/5</strong>
+                        <span>Average approved rating across testimonials and product reviews</span>
                     </div>
                     <div class="reviews-summary-mini">
-                        <strong><?php echo (int) ($homepageReviewSummary['total_reviews'] ?? 0); ?></strong>
-                        <span>Published customer reviews</span>
+                        <strong><?php echo $homepageTotalPublishedTestimonials; ?></strong>
+                        <span>Published testimonials and product reviews</span>
                     </div>
                     <div class="reviews-summary-mini">
-                        <strong>Small rounded portraits</strong>
-                        <span>Designed to keep dense review pages clean and readable</span>
+                        <strong><?php echo count($homepageCustomerReviews); ?> + <?php echo count($homepageProductTestimonials); ?></strong>
+                        <span>General testimonials and product testimonials blended on one landing-page feed</span>
                     </div>
                 </div>
 
@@ -454,6 +581,9 @@ $introVideoUrl = getIntroVideoUrl();
                                     >
                                     <div>
                                         <h3 class="h6 mb-1"><?php echo sanitize($review['reviewer_name'] ?? 'Customer'); ?></h3>
+                                        <div class="small text-muted mb-1">
+                                            <?php echo sanitize($review['display_title'] ?? 'Customer Testimonial'); ?>
+                                        </div>
                                         <div class="review-stars small">
                                             <?php for ($i = 1; $i <= 5; $i++): ?>
                                             <i class="<?php echo $i <= (int) ($review['rating'] ?? 0) ? 'fas' : 'far'; ?> fa-star"></i>
@@ -461,8 +591,17 @@ $introVideoUrl = getIntroVideoUrl();
                                         </div>
                                     </div>
                                 </div>
-                                <small class="text-muted"><?php echo formatDate($review['updated_at'] ?? $review['created_at']); ?></small>
+                                <small class="text-muted"><?php echo formatDate($review['display_date'] ?? $review['updated_at'] ?? $review['created_at']); ?></small>
                             </div>
+                            <?php if (($review['review_type'] ?? '') === 'product' && !empty($review['display_image_url'])): ?>
+                            <div class="mb-3">
+                                <img
+                                    src="<?php echo sanitize($review['display_image_url']); ?>"
+                                    alt="<?php echo sanitize(($review['product_name'] ?? 'Product') . ' testimonial photo'); ?>"
+                                    class="product-testimonial-thumb"
+                                >
+                            </div>
+                            <?php endif; ?>
                             <p class="mb-0 review-comment"><?php echo nl2br(sanitize($review['comment'] ?? '')); ?></p>
                         </article>
                     </div>

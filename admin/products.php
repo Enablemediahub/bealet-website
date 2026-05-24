@@ -16,6 +16,7 @@ requireSuperAdmin();
 global $db;
 
 $errors = [];
+ensureProductCategoryStorageSupport();
 ensureProductGalleryTable();
 ensureProductReviewSupport();
 $productColumns = $db->fetchAll("SHOW COLUMNS FROM products");
@@ -78,6 +79,40 @@ $hasArModel3dColumn = isset($productColumnMap['ar_model_3d']);
 $hasArPositionXColumn = isset($productColumnMap['ar_position_x']);
 $hasArPositionYColumn = isset($productColumnMap['ar_position_y']);
 $hasArScaleColumn = isset($productColumnMap['ar_scale']);
+$hasSlugColumn = isset($productColumnMap['slug']);
+
+/**
+ * Build a unique product slug when the database enforces slug uniqueness.
+ */
+function buildUniqueProductSlug($name, $productId = 0) {
+    global $db;
+
+    $baseSlug = generateSlug(decodeStoredText($name));
+    if ($baseSlug === '') {
+        $baseSlug = 'product';
+    }
+
+    $slug = $baseSlug;
+    $suffix = 2;
+
+    while (true) {
+        $params = [$slug];
+        $query = "SELECT id FROM products WHERE slug = ?";
+
+        if ((int) $productId > 0) {
+            $query .= " AND id <> ?";
+            $params[] = (int) $productId;
+        }
+
+        $existing = $db->fetch($query . " LIMIT 1", $params);
+        if (!$existing) {
+            return $slug;
+        }
+
+        $slug = $baseSlug . '-' . $suffix;
+        $suffix++;
+    }
+}
 
 /**
  * Resolve a product image to a local filesystem path when possible.
@@ -217,9 +252,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $productId = (int) ($_POST['product_id'] ?? 0);
         $name = sanitize($_POST['name'] ?? '');
         $brand = sanitize($_POST['brand'] ?? '');
-        $category = sanitize($_POST['category'] ?? '');
+        $category = normalizeProductCategoryKey($_POST['category'] ?? '');
         $frameTarget = sanitize($_POST['frame_target'] ?? '');
-        $description = sanitize($_POST['description'] ?? '');
+        $description = trim(decodeStoredText($_POST['description'] ?? ''));
         $price = (float) ($_POST['price'] ?? 0);
         $stock = (int) ($_POST['stock'] ?? 0);
         $material = sanitize($_POST['material'] ?? '');
@@ -233,6 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $removeArModel2dRight = isset($_POST['remove_ar_model_2d_right']);
         $removeArModel3d = isset($_POST['remove_ar_model_3d']);
         $isFeatured = $hasIsFeaturedColumn && isset($_POST['is_featured']) ? 1 : 0;
+        $productSlug = $hasSlugColumn ? buildUniqueProductSlug($name, $productId) : '';
         $removeGalleryImages = [];
         for ($slot = 1; $slot <= 4; $slot++) {
             $removeGalleryImages[$slot] = isset($_POST['remove_gallery_image_' . $slot]);
@@ -408,6 +444,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $params[] = $category === 'frames' ? ($frameTarget !== '' ? $frameTarget : null) : null;
                 }
 
+                if ($hasSlugColumn) {
+                    $setClauses[] = "slug = ?";
+                    $params[] = $productSlug;
+                }
+
                 if ($imageColumn) {
                     $setClauses[] = "{$imageColumn} = ?";
                     $params[] = $productImage;
@@ -536,6 +577,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $columns[] = 'frame_target';
                     $placeholders[] = '?';
                     $params[] = $category === 'frames' ? ($frameTarget !== '' ? $frameTarget : null) : null;
+                }
+
+                if ($hasSlugColumn) {
+                    $columns[] = 'slug';
+                    $placeholders[] = '?';
+                    $params[] = $productSlug;
                 }
 
                 if ($imageColumn) {
@@ -679,7 +726,7 @@ if (!empty($conditions)) {
 $productsQuery .= " ORDER BY " . ($hasIsFeaturedColumn ? 'is_featured DESC, ' : '') . ($hasCreatedAtColumn ? 'created_at DESC' : 'id DESC');
 
 $products = $db->fetchAll($productsQuery, $params);
-$categories = $db->fetchAll("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category <> '' ORDER BY category ASC");
+$categories = getProductCategoryOptions();
 $productCatalog = [];
 
 foreach ($products as $product) {
@@ -687,9 +734,9 @@ foreach ($products as $product) {
         'id' => (int) $product['id'],
         'name' => $product['name'] ?? '',
         'brand' => $product['brand'] ?? '',
-        'category' => $product['category'] ?? '',
+        'category' => normalizeProductCategoryKey($product['category'] ?? ''),
         'frame_target' => $product['frame_target'] ?? '',
-        'description' => $product['description'] ?? '',
+        'description' => decodeStoredText($product['description'] ?? ''),
         'price' => isset($product['price']) ? (string) $product['price'] : '',
         'stock' => isset($product['stock']) ? (string) $product['stock'] : '0',
         'material' => $materialColumn ? ($product[$materialColumn] ?? '') : '',
@@ -778,10 +825,9 @@ require_once __DIR__ . '/inc/header.php';
                             <label class="form-label" for="filterCategory">Category</label>
                             <select class="form-select" id="filterCategory" name="category">
                                 <option value="">All categories</option>
-                                <?php foreach ($categories as $categoryRow): ?>
-                                <?php $categoryValue = (string) ($categoryRow['category'] ?? ''); ?>
+                                <?php foreach ($categories as $categoryValue => $categoryLabel): ?>
                                 <option value="<?php echo sanitize($categoryValue); ?>" <?php echo $categoryFilter === $categoryValue ? 'selected' : ''; ?>>
-                                    <?php echo sanitize(ucwords(str_replace('_', ' ', $categoryValue))); ?>
+                                    <?php echo sanitize($categoryLabel); ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -949,10 +995,11 @@ require_once __DIR__ . '/inc/header.php';
                                     <label class="form-label" for="productCategory">Category</label>
                                     <select class="form-select" name="category" id="productCategory" required>
                                         <option value="">Select Category</option>
-                                        <option value="frames" <?php echo (($initialEditProductData['category'] ?? '') === 'frames') ? 'selected' : ''; ?>>Frames</option>
-                                        <option value="lenses" <?php echo (($initialEditProductData['category'] ?? '') === 'lenses') ? 'selected' : ''; ?>>Lenses</option>
-                                        <option value="contact_lenses" <?php echo (($initialEditProductData['category'] ?? '') === 'contact_lenses') ? 'selected' : ''; ?>>Contact Lenses</option>
-                                        <option value="accessories" <?php echo (($initialEditProductData['category'] ?? '') === 'accessories') ? 'selected' : ''; ?>>Accessories</option>
+                                        <?php foreach (getProductCategoryOptions() as $categoryValue => $categoryLabel): ?>
+                                        <option value="<?php echo sanitize($categoryValue); ?>" <?php echo (($initialEditProductData['category'] ?? '') === $categoryValue) ? 'selected' : ''; ?>>
+                                            <?php echo sanitize($categoryLabel); ?>
+                                        </option>
+                                        <?php endforeach; ?>
                                     </select>
                                 </div>
                             </div>
@@ -994,7 +1041,7 @@ require_once __DIR__ . '/inc/header.php';
 
                             <div class="mb-3">
                                 <label class="form-label" for="productDescription">Description</label>
-                                <textarea class="form-control" name="description" id="productDescription" rows="4"><?php echo sanitize($initialEditProductData['description'] ?? ''); ?></textarea>
+                                <textarea class="form-control" name="description" id="productDescription" rows="4"><?php echo sanitize(decodeStoredText($initialEditProductData['description'] ?? '')); ?></textarea>
                             </div>
 
                             <div class="row">

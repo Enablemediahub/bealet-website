@@ -6,8 +6,51 @@
 
 // Application Settings
 define('APP_NAME', 'BEALET OPTICAL CENTER');
-define('APP_URL', 'http://localhost/bealet-website');
-define('APP_ENV', 'development'); // development, production
+
+$appIsHttps = (
+    (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+    || (
+        !empty($_SERVER['HTTP_X_FORWARDED_PROTO'])
+        && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https'
+    )
+);
+
+$appScheme = $appIsHttps ? 'https' : 'http';
+$appHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$appBasePath = '';
+$documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? realpath((string) $_SERVER['DOCUMENT_ROOT']) : false;
+$projectRoot = realpath(dirname(__DIR__));
+
+if ($documentRoot && $projectRoot) {
+    $normalizedDocumentRoot = str_replace('\\', '/', $documentRoot);
+    $normalizedProjectRoot = str_replace('\\', '/', $projectRoot);
+
+    if (strpos($normalizedProjectRoot, $normalizedDocumentRoot) === 0) {
+        $appBasePath = str_replace('\\', '/', substr($normalizedProjectRoot, strlen($normalizedDocumentRoot)));
+    }
+}
+
+if ($appBasePath === '' && !empty($_SERVER['SCRIPT_NAME'])) {
+    $scriptName = str_replace('\\', '/', (string) $_SERVER['SCRIPT_NAME']);
+    $scriptDirectory = trim(str_replace('\\', '/', dirname($scriptName)), '/');
+
+    if ($scriptDirectory !== '') {
+        $pathParts = explode('/', $scriptDirectory);
+        if (end($pathParts) === 'admin') {
+            array_pop($pathParts);
+        }
+        $appBasePath = '/' . implode('/', $pathParts);
+    }
+}
+
+$appBasePath = '/' . trim((string) $appBasePath, '/');
+if ($appBasePath === '/') {
+    $appBasePath = '';
+}
+
+define('APP_URL', $appScheme . '://' . $appHost . $appBasePath);
+define('APP_ENV', 'production'); // development, production
 define('DEBUG_MODE', APP_ENV === 'development');
 
 // Database Configuration
@@ -87,7 +130,7 @@ date_default_timezone_set('Africa/Accra');
 // Session Configuration
 if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set('session.cookie_httponly', 1);
-    ini_set('session.cookie_secure', APP_ENV === 'production' ? 1 : 0);
+    ini_set('session.cookie_secure', $appIsHttps ? 1 : 0);
     ini_set('session.cookie_samesite', 'Strict');
     ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
 }

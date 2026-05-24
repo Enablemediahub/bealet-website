@@ -20,15 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_product_review
     $rating = (int) ($_POST['rating'] ?? 0);
     $comment = trim((string) ($_POST['comment'] ?? ''));
     $reviewImagePath = trim((string) ($_POST['existing_review_image'] ?? ''));
+    $guestName = trim((string) ($_POST['guest_name'] ?? ''));
+    $guestEmail = trim((string) ($_POST['guest_email'] ?? ''));
 
     $productReviewPrefill[$reviewProductId] = [
         'rating' => $rating,
         'comment' => $comment,
+        'guest_name' => $guestName,
+        'guest_email' => $guestEmail,
     ];
 
-    if (!$currentUser) {
-        $productReviewErrors[$reviewProductId][] = 'Please login before reviewing a product.';
-    } elseif (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
         $productReviewErrors[$reviewProductId][] = 'Invalid request. Please try again.';
     } else {
         if ($reviewProductId <= 0) {
@@ -47,6 +49,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_product_review
             $productReviewErrors[$reviewProductId][] = 'Please keep your review under 1500 characters.';
         }
 
+        if (!$currentUser) {
+            if ($guestName === '') {
+                $productReviewErrors[$reviewProductId][] = 'Please share your name with this product review.';
+            }
+
+            if ($guestEmail === '') {
+                $productReviewErrors[$reviewProductId][] = 'Please enter your email address for this product review.';
+            } elseif (!validateEmail($guestEmail)) {
+                $productReviewErrors[$reviewProductId][] = 'Please enter a valid email address.';
+            }
+        }
+
         $reviewImageError = (int) ($_FILES['review_image']['error'] ?? UPLOAD_ERR_NO_FILE);
         if ($reviewImageError === UPLOAD_ERR_OK) {
             $upload = uploadFile($_FILES['review_image'], 'reviews');
@@ -62,14 +76,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_product_review
         }
 
         if (empty($productReviewErrors[$reviewProductId])) {
-            $existingProductReview = getProductReviewByUserId($reviewProductId, (int) $currentUser['id']);
+            $reviewerName = $currentUser ? (string) ($currentUser['name'] ?? 'Customer') : $guestName;
+            $reviewerEmail = $currentUser ? (string) ($currentUser['email'] ?? '') : $guestEmail;
+            $existingProductReview = $currentUser ? getProductReviewByUserId($reviewProductId, (int) $currentUser['id']) : null;
 
             if ($existingProductReview) {
                 $db->update(
                     "UPDATE reviews
-                     SET rating = ?, comment = ?, review_image = ?, updated_at = NOW()
+                     SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, review_image = ?, is_approved = 0, updated_at = NOW()
                      WHERE id = ?",
                     [
+                        $reviewerName !== '' ? $reviewerName : null,
+                        $reviewerEmail !== '' ? $reviewerEmail : null,
                         $rating,
                         $comment,
                         $reviewImagePath !== '' ? $reviewImagePath : null,
@@ -78,11 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_product_review
                 );
             } else {
                 $db->insert(
-                    "INSERT INTO reviews (product_id, user_id, rating, comment, review_image)
-                     VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO reviews (product_id, user_id, reviewer_name, reviewer_email, rating, comment, review_image, is_approved)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
                     [
                         $reviewProductId,
-                        (int) $currentUser['id'],
+                        $currentUser ? (int) $currentUser['id'] : null,
+                        $reviewerName !== '' ? $reviewerName : null,
+                        $reviewerEmail !== '' ? $reviewerEmail : null,
                         $rating,
                         $comment,
                         $reviewImagePath !== '' ? $reviewImagePath : null,
@@ -90,8 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_product_review
                 );
             }
 
-            createLog('PRODUCT_REVIEW_SUBMITTED', 'Product review saved for product #' . $reviewProductId, (int) $currentUser['id']);
-            setFlashMessage('success', 'Your product review has been saved.');
+            createLog('PRODUCT_REVIEW_SUBMITTED', 'Product review saved for product #' . $reviewProductId, $currentUser['id'] ?? null);
+            setFlashMessage('success', 'Your product review has been saved and is awaiting admin approval.');
             redirect(APP_URL . '/shop.php?view_product=' . $reviewProductId . '&review_saved=1');
         }
     }
@@ -242,7 +262,7 @@ if ($paginationWindowEnd - $paginationWindowStart < 4) {
 }
 
 // Get categories
-$categories = $db->fetchAll("SELECT DISTINCT category FROM products WHERE is_active = 1 ORDER BY category");
+$categories = getProductCategoryOptions();
 $frameTargets = getProductAudienceOptions();
 
 // Get brands
@@ -262,7 +282,7 @@ foreach ($modalProducts as $product) {
         'brand' => (string) ($product['brand'] ?? ''),
         'category_label' => formatProductCategoryLabel($product['category'] ?? ''),
         'frame_target_label' => !empty($product['frame_target']) ? formatProductAudienceLabel($product['frame_target']) : '',
-        'description' => (string) ($product['description'] ?? ''),
+        'description' => decodeStoredText($product['description'] ?? ''),
         'price' => formatCurrency($product['price'] ?? 0),
         'stock' => (int) ($product['stock'] ?? 0),
         'gallery_images' => array_values(getProductGalleryImages($productId, $product)),
@@ -273,8 +293,10 @@ foreach ($modalProducts as $product) {
             'rating' => (int) ($reviewPrefill['rating'] ?? ($existingUserReview['rating'] ?? 5)),
             'comment' => (string) ($reviewPrefill['comment'] ?? ($existingUserReview['comment'] ?? '')),
             'existing_review_image' => (string) ($existingUserReview['review_image'] ?? ''),
+            'guest_name' => (string) ($reviewPrefill['guest_name'] ?? ($currentUser['name'] ?? ($existingUserReview['reviewer_name'] ?? ''))),
+            'guest_email' => (string) ($reviewPrefill['guest_email'] ?? ($currentUser['email'] ?? ($existingUserReview['reviewer_email'] ?? ''))),
         ],
-        'review_success_message' => $reviewSaved && $viewProductId === $productId ? 'Your product review was saved successfully.' : '',
+        'review_success_message' => $reviewSaved && $viewProductId === $productId ? 'Your product review was saved and is awaiting admin approval.' : '',
         'reviews' => array_map(static function ($review) {
             return [
                 'reviewer_name' => (string) ($review['reviewer_name'] ?? 'Customer'),
@@ -302,12 +324,85 @@ if ($productModalCatalogJson === false) {
     $productModalCatalogJson = '{}';
 }
 
+$buildTeaserCommentPreview = static function (?string $comment): array {
+    $comment = trim((string) $comment);
+    if ($comment === '') {
+        return [
+            'comment' => '',
+            'comment_preview' => '',
+            'has_more' => false,
+        ];
+    }
+
+    $previewLimit = 145;
+    if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+        $hasMore = mb_strlen($comment) > $previewLimit;
+        $preview = $hasMore ? rtrim(mb_substr($comment, 0, $previewLimit - 1)) . '…' : $comment;
+    } else {
+        $hasMore = strlen($comment) > $previewLimit;
+        $preview = $hasMore ? rtrim(substr($comment, 0, $previewLimit - 1)) . '…' : $comment;
+    }
+
+    return [
+        'comment' => $comment,
+        'comment_preview' => $preview,
+        'has_more' => $hasMore,
+    ];
+};
+
+$floatingReviewTeasers = array_merge(
+    array_map(static function ($review) use ($buildTeaserCommentPreview) {
+        $commentPreview = $buildTeaserCommentPreview($review['comment'] ?? '');
+        return [
+            'reviewer_name' => (string) ($review['reviewer_name'] ?? 'Customer'),
+            'product_name' => 'Customer Testimonial',
+            'comment' => $commentPreview['comment'],
+            'comment_preview' => $commentPreview['comment_preview'],
+            'has_more' => $commentPreview['has_more'],
+            'rating' => (int) ($review['rating'] ?? 0),
+            'profile_image_url' => getUserProfileImageUrl($review['profile_image'] ?? '', $review['reviewer_name'] ?? 'Customer'),
+            'review_image_url' => '',
+            'target_url' => APP_URL . '/reviews',
+        ];
+    }, getApprovedCustomerReviews(8)),
+    array_map(static function ($review) use ($buildTeaserCommentPreview) {
+        $commentPreview = $buildTeaserCommentPreview($review['comment'] ?? '');
+        return [
+            'reviewer_name' => (string) ($review['reviewer_name'] ?? 'Customer'),
+            'product_name' => (string) ($review['product_name'] ?? 'Bealet frame'),
+            'comment' => $commentPreview['comment'],
+            'comment_preview' => $commentPreview['comment_preview'],
+            'has_more' => $commentPreview['has_more'],
+            'rating' => (int) ($review['rating'] ?? 0),
+            'profile_image_url' => getUserProfileImageUrl($review['reviewer_profile_image'] ?? '', $review['reviewer_name'] ?? 'Customer'),
+            'review_image_url' => getProductReviewImageUrl($review['review_image'] ?? ''),
+            'target_url' => !empty($review['product_id']) ? APP_URL . '/shop.php?view_product=' . (int) $review['product_id'] : APP_URL . '/reviews',
+        ];
+    }, getRecentProductTestimonials(12))
+);
+
+$floatingReviewTeasersJson = json_encode(
+    $floatingReviewTeasers,
+    JSON_UNESCAPED_SLASHES
+    | JSON_HEX_TAG
+    | JSON_HEX_APOS
+    | JSON_HEX_AMP
+    | JSON_HEX_QUOT
+    | JSON_INVALID_UTF8_SUBSTITUTE
+);
+
+if ($floatingReviewTeasersJson === false) {
+    $floatingReviewTeasersJson = '[]';
+}
+
 $productGroups = [];
+
 foreach ($products as $product) {
-    $groupKey = (string) ($product['category'] ?? 'other');
+    $normalizedCategory = normalizeProductCategoryKey($product['category'] ?? 'other');
+    $groupKey = $normalizedCategory !== '' ? $normalizedCategory : 'other';
     $groupLabel = formatProductCategoryLabel($groupKey);
 
-    if (($product['category'] ?? '') === 'frames') {
+    if ($normalizedCategory === 'frames') {
         $targetKey = trim((string) ($product['frame_target'] ?? ''));
         if ($targetKey === '') {
             $targetKey = 'unisex';
@@ -372,12 +467,11 @@ foreach ($products as $product) {
                                         <input type="radio" name="category" value="" id="cat-all" class="form-check-input" <?php echo empty($category) ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="cat-all">All Categories</label>
                                     </div>
-                                    <?php foreach ($categories as $cat): ?>
-                                    <?php $categoryValue = (string) ($cat['category'] ?? ''); ?>
+                                    <?php foreach ($categories as $categoryValue => $categoryLabel): ?>
                                     <div class="form-check">
                                         <input type="radio" name="category" value="<?php echo sanitize($categoryValue); ?>" id="cat-<?php echo sanitize($categoryValue); ?>" class="form-check-input" <?php echo $category === $categoryValue ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="cat-<?php echo sanitize($categoryValue); ?>">
-                                            <?php echo sanitize(formatProductCategoryLabel($categoryValue)); ?>
+                                            <?php echo sanitize($categoryLabel); ?>
                                         </label>
                                     </div>
                                     <?php endforeach; ?>
@@ -546,7 +640,7 @@ foreach ($products as $product) {
                                         
                                         <div class="d-grid gap-2">
                                             <?php if ($productTryOnLink !== ''): ?>
-                                            <a class="btn btn-outline-dark" href="<?php echo sanitize($productTryOnLink); ?>">
+                                            <a class="btn product-tryon-cta" href="<?php echo sanitize($productTryOnLink); ?>">
                                                 <i class="fas fa-vr-cardboard me-2"></i> Try On
                                             </a>
                                             <?php endif; ?>
@@ -563,7 +657,7 @@ foreach ($products as $product) {
                                                 type="button"
                                                 data-product-modal="<?php echo $productId; ?>"
                                                 data-product-payload="<?php echo $productPayloadJson; ?>"
-                                                onclick="return openProductModalFromButton(this);"
+                                                onclick="stopProductCardGalleryAutoplay(this); return openProductModalFromButton(this);"
                                             >
                                                 <i class="fas fa-eye me-2"></i> View Product
                                             </button>
@@ -639,6 +733,28 @@ foreach ($products as $product) {
         </div>
     </section>
 
+    <?php if (!empty($floatingReviewTeasers)): ?>
+    <aside class="shop-review-teaser" id="shopReviewTeaser" aria-live="polite" aria-atomic="true" hidden>
+        <div class="shop-review-teaser__panel">
+            <div class="shop-review-teaser__label">Customer spotlight</div>
+            <div class="shop-review-teaser__content">
+                <div class="shop-review-teaser__image-shell">
+                    <img src="" alt="" class="shop-review-teaser__image" id="shopReviewTeaserImage">
+                </div>
+                <div class="shop-review-teaser__copy">
+                    <div class="shop-review-teaser__heading">
+                        <strong id="shopReviewTeaserName">Customer</strong>
+                        <span id="shopReviewTeaserProduct">Bealet frame</span>
+                    </div>
+                    <div class="shop-review-teaser__stars" id="shopReviewTeaserStars"></div>
+                    <p id="shopReviewTeaserComment" class="mb-0"></p>
+                    <a class="shop-review-teaser__action" id="shopReviewTeaserLink" href="<?php echo APP_URL; ?>/reviews">Read more</a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <?php endif; ?>
+
     <div class="modal fade" id="productImageModal" tabindex="-1" aria-labelledby="productImageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content product-detail-modal">
@@ -675,7 +791,7 @@ foreach ($products as $product) {
                                     <button class="btn btn-primary" type="button" id="productModalAddToCartButton">
                                         <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                                     </button>
-                                    <a class="btn btn-outline-dark d-none" href="#" id="productModalTryOnLink">
+                                    <a class="btn product-tryon-cta d-none" href="#" id="productModalTryOnLink">
                                         <i class="fas fa-vr-cardboard me-2"></i> Try On
                                     </a>
                                 </div>
@@ -693,12 +809,24 @@ foreach ($products as $product) {
 
                             <div class="product-modal-review-form-block">
                                 <h6 class="mb-3">Add Your Product Review</h6>
-                                <?php if ($currentUser): ?>
                                 <form method="POST" enctype="multipart/form-data" id="productReviewForm">
                                     <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                                     <input type="hidden" name="submit_product_review" value="1">
                                     <input type="hidden" name="review_product_id" id="reviewProductId" value="">
                                     <input type="hidden" name="existing_review_image" id="existingReviewImage" value="">
+
+                                    <?php if (!$currentUser): ?>
+                                    <div class="row g-3">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="productReviewGuestName">Your Name</label>
+                                            <input type="text" class="form-control" name="guest_name" id="productReviewGuestName" placeholder="Enter your name">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="productReviewGuestEmail">Your Email</label>
+                                            <input type="email" class="form-control" name="guest_email" id="productReviewGuestEmail" placeholder="Enter your email">
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
 
                                     <div class="mb-3">
                                         <label class="form-label" for="productReviewRating">Your Rating</label>
@@ -726,14 +854,8 @@ foreach ($products as $product) {
                                         <i class="fas fa-paper-plane me-2"></i> Save Product Review
                                     </button>
                                 </form>
-                                <?php else: ?>
-                                <div class="review-login-card">
-                                    <p class="mb-3">Login or create an account to rate this frame and upload a customer photo.</p>
-                                    <div class="d-grid gap-2">
-                                        <a href="<?php echo APP_URL; ?>/login" class="btn btn-primary">Login</a>
-                                        <a href="<?php echo APP_URL; ?>/register" class="btn btn-outline-primary">Register</a>
-                                    </div>
-                                </div>
+                                <?php if (!$currentUser): ?>
+                                <p class="text-muted small mt-3 mb-0">Guests can submit a product review with their name and email. If you already have an account, you can still login and your review stays tied to your profile.</p>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -747,6 +869,20 @@ foreach ($products as $product) {
     .product-detail-modal {
         border-radius: 1.5rem;
         overflow: hidden;
+    }
+
+    .product-detail-modal .modal-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-bottom: none;
+    }
+
+    .product-detail-modal .modal-title,
+    .product-detail-modal #productModalMeta {
+        color: #fff !important;
+    }
+
+    .product-detail-modal .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
     }
 
     .product-detail-carousel {
@@ -807,6 +943,127 @@ foreach ($products as $product) {
         flex-shrink: 0;
     }
 
+    .shop-review-teaser {
+        position: fixed;
+        right: 0;
+        top: 50%;
+        bottom: auto;
+        transform: translate3d(calc(100% - 38px), -50%, 0);
+        z-index: 1030;
+        transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .shop-review-teaser.is-visible {
+        transform: translate3d(0, -50%, 0);
+    }
+
+    .shop-review-teaser__panel {
+        display: block;
+        width: min(214px, calc(100vw - 18px));
+        background: rgba(15, 23, 42, 0.96);
+        color: #fff;
+        border-radius: 1.4rem 0 0 1.4rem;
+        box-shadow: 0 28px 55px rgba(15, 23, 42, 0.24);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .shop-review-teaser__label {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.7rem 1rem 0.25rem;
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    .shop-review-teaser__content {
+        display: block;
+        padding: 0 0.9rem 1rem;
+    }
+
+    .shop-review-teaser__image-shell {
+        width: calc(100% + 1.8rem);
+        height: 148px;
+        margin: 0 -0.9rem 0.85rem;
+        padding: 0.45rem;
+        background: linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 1));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .shop-review-teaser__image {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        border-radius: 0.95rem;
+        object-fit: contain;
+        border: 0;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .shop-review-teaser__copy {
+        min-width: 0;
+    }
+
+    .shop-review-teaser__heading {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .shop-review-teaser__heading strong,
+    .shop-review-teaser__heading span {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .shop-review-teaser__heading span {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.88rem;
+    }
+
+    .shop-review-teaser__stars {
+        color: #fbbf24;
+        font-size: 0.82rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .shop-review-teaser__copy p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.86rem;
+        line-height: 1.45;
+        white-space: normal;
+        overflow: hidden;
+        min-height: 4.2rem;
+        margin-bottom: 0.7rem !important;
+    }
+
+    .shop-review-teaser__action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: #f8d07a;
+        color: #152235;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+    .shop-review-teaser__action:hover,
+    .shop-review-teaser__action:focus {
+        color: #152235;
+        background: #ffe09f;
+    }
+
     @media (max-width: 768px) {
         .modal-dialog.modal-xl {
             max-width: 98vw;
@@ -816,6 +1073,24 @@ foreach ($products as $product) {
         .product-modal-image {
             max-height: 42vh;
         }
+
+        .shop-review-teaser {
+            top: 50%;
+            bottom: auto;
+            transform: translate3d(calc(100% - 42px), -50%, 0);
+        }
+
+        .shop-review-teaser.is-visible {
+            transform: translate3d(0, -50%, 0);
+        }
+
+        .shop-review-teaser__panel {
+            width: min(198px, calc(100vw - 12px));
+        }
+
+        .shop-review-teaser__image-shell {
+            height: 132px;
+        }
     }
 
     @media (max-width: 480px) {
@@ -824,11 +1099,18 @@ foreach ($products as $product) {
             height: 68px;
         }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+        .shop-review-teaser {
+            transition: none;
+        }
+    }
     </style>
 
     <script>
     (function () {
         var productCatalog = <?php echo $productModalCatalogJson; ?>;
+        var floatingReviewTeasers = <?php echo $floatingReviewTeasersJson; ?>;
         var modalElement = document.getElementById('productImageModal');
         var modalTitle = document.getElementById('productImageModalLabel');
         var modalMeta = document.getElementById('productModalMeta');
@@ -848,12 +1130,24 @@ foreach ($products as $product) {
         var reviewRatingInput = document.getElementById('productReviewRating');
         var reviewCommentInput = document.getElementById('productReviewComment');
         var reviewImageInput = document.getElementById('productReviewImage');
+        var reviewGuestNameInput = document.getElementById('productReviewGuestName');
+        var reviewGuestEmailInput = document.getElementById('productReviewGuestEmail');
         var reviewSubmitButton = reviewFormElement ? reviewFormElement.querySelector('button[type="submit"]') : null;
         var reviewSuccessElement = document.getElementById('productReviewSuccess');
         var reviewErrorsElement = document.getElementById('productReviewErrors');
+        var reviewTeaserElement = document.getElementById('shopReviewTeaser');
+        var reviewTeaserLinkElement = document.getElementById('shopReviewTeaserLink');
+        var reviewTeaserImageElement = document.getElementById('shopReviewTeaserImage');
+        var reviewTeaserNameElement = document.getElementById('shopReviewTeaserName');
+        var reviewTeaserProductElement = document.getElementById('shopReviewTeaserProduct');
+        var reviewTeaserStarsElement = document.getElementById('shopReviewTeaserStars');
+        var reviewTeaserCommentElement = document.getElementById('shopReviewTeaserComment');
         var modalInstance = null;
         var activeCarouselInstance = null;
         var activeProductId = 0;
+        var reviewTeaserIndex = -1;
+        var reviewTeaserVisibleTimeout = null;
+        var reviewTeaserCycleTimeout = null;
 
         function escapeHtml(value) {
             return String(value || '')
@@ -868,6 +1162,14 @@ foreach ($products as $product) {
             var html = '';
             for (var i = 1; i <= 5; i++) {
                 html += '<i class="' + (i <= rating ? 'fas' : 'far') + ' fa-star star" style="color: ' + (i <= rating ? 'var(--warning)' : '#E5E7EB') + ';"></i>';
+            }
+            return html;
+        }
+
+        function renderTinyStars(rating) {
+            var html = '';
+            for (var i = 1; i <= 5; i++) {
+                html += '<i class="' + (i <= rating ? 'fas' : 'far') + ' fa-star"></i>';
             }
             return html;
         }
@@ -993,6 +1295,113 @@ foreach ($products as $product) {
                 : '<i class="fas fa-paper-plane me-2"></i> Save Product Review';
         }
 
+        function initializeProductCardGalleries() {
+            if (typeof bootstrap === 'undefined') {
+                return;
+            }
+
+            document.querySelectorAll('.product-gallery-carousel').forEach(function (carouselNode) {
+                var carousel = bootstrap.Carousel.getOrCreateInstance(carouselNode, {
+                    interval: 2600,
+                    ride: false,
+                    pause: false,
+                    wrap: true,
+                    touch: true
+                });
+
+                carousel.cycle();
+
+                carouselNode.addEventListener('mouseenter', function () {
+                    carousel.pause();
+                });
+
+                carouselNode.addEventListener('mouseleave', function () {
+                    carousel.cycle();
+                });
+            });
+        }
+
+        window.stopProductCardGalleryAutoplay = function (button) {
+            if (typeof bootstrap === 'undefined' || !button) {
+                return;
+            }
+
+            var card = button.closest('.product-card');
+            var carouselNode = card ? card.querySelector('.product-gallery-carousel') : null;
+            if (!carouselNode) {
+                return;
+            }
+
+            var carousel = bootstrap.Carousel.getInstance(carouselNode);
+            if (carousel) {
+                carousel.pause();
+            }
+        };
+
+        function scheduleReviewTeaser() {
+            if (!reviewTeaserElement || floatingReviewTeasers.length === 0) {
+                return;
+            }
+
+            clearTimeout(reviewTeaserVisibleTimeout);
+            clearTimeout(reviewTeaserCycleTimeout);
+            reviewTeaserCycleTimeout = window.setTimeout(showNextReviewTeaser, 10000);
+        }
+
+        function hideReviewTeaser(scheduleNext) {
+            if (!reviewTeaserElement) {
+                return;
+            }
+
+            reviewTeaserElement.classList.remove('is-visible');
+            if (scheduleNext) {
+                scheduleReviewTeaser();
+            }
+        }
+
+        function showNextReviewTeaser() {
+            if (!reviewTeaserElement || floatingReviewTeasers.length === 0) {
+                return;
+            }
+
+            reviewTeaserIndex = (reviewTeaserIndex + 1) % floatingReviewTeasers.length;
+            var teaser = floatingReviewTeasers[reviewTeaserIndex] || {};
+            var imageUrl = teaser.review_image_url || teaser.profile_image_url || '';
+
+            reviewTeaserElement.hidden = false;
+            if (reviewTeaserImageElement) {
+                reviewTeaserImageElement.src = imageUrl;
+                reviewTeaserImageElement.alt = (teaser.reviewer_name || 'Customer') + ' review photo';
+            }
+            if (reviewTeaserLinkElement) {
+                reviewTeaserLinkElement.href = teaser.target_url || '<?php echo APP_URL; ?>/reviews';
+            }
+            if (reviewTeaserNameElement) {
+                reviewTeaserNameElement.textContent = teaser.reviewer_name || 'Customer';
+            }
+            if (reviewTeaserProductElement) {
+                reviewTeaserProductElement.textContent = teaser.product_name || 'Bealet frame';
+            }
+            if (reviewTeaserStarsElement) {
+                reviewTeaserStarsElement.innerHTML = renderTinyStars(Number(teaser.rating || 0));
+            }
+            if (reviewTeaserCommentElement) {
+                reviewTeaserCommentElement.textContent = teaser.comment_preview || teaser.comment || 'A recent customer shared a lovely Bealet moment.';
+            }
+            if (reviewTeaserLinkElement) {
+                reviewTeaserLinkElement.textContent = teaser.has_more ? 'Read more' : 'Open review';
+            }
+
+            window.requestAnimationFrame(function () {
+                reviewTeaserElement.classList.add('is-visible');
+            });
+
+            clearTimeout(reviewTeaserVisibleTimeout);
+            reviewTeaserVisibleTimeout = window.setTimeout(function () {
+                hideReviewTeaser(true);
+            }, 8000);
+        }
+
         function buildBadges(product) {
             var badges = [];
             if (product.category_label) {
@@ -1019,6 +1428,12 @@ foreach ($products as $product) {
             existingReviewImageInput.value = reviewForm.existing_review_image || '';
             reviewRatingInput.value = String(reviewForm.rating || 5);
             reviewCommentInput.value = reviewForm.comment || '';
+            if (reviewGuestNameInput) {
+                reviewGuestNameInput.value = reviewForm.guest_name || '';
+            }
+            if (reviewGuestEmailInput) {
+                reviewGuestEmailInput.value = reviewForm.guest_email || '';
+            }
             if (reviewImageInput) {
                 reviewImageInput.value = '';
             }
@@ -1109,7 +1524,7 @@ foreach ($products as $product) {
                 cachedProduct.reviews = Array.isArray(data.reviews) ? data.reviews : [];
                 cachedProduct.review_form = data.review_form || cachedProduct.review_form || {};
                 cachedProduct.review_errors = [];
-                cachedProduct.review_success_message = data.message || 'Your product review was saved successfully.';
+                cachedProduct.review_success_message = data.message || 'Your product review was saved and is awaiting admin approval.';
                 productCatalog[updatedProductId] = cachedProduct;
 
                 if (activeProductId === updatedProductId) {
@@ -1137,6 +1552,9 @@ foreach ($products as $product) {
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            initializeProductCardGalleries();
+            scheduleReviewTeaser();
+
             var requestedProductId = <?php echo (int) $viewProductId; ?>;
             if (requestedProductId > 0) {
                 var requestedProduct = productCatalog[String(requestedProductId)] || productCatalog[requestedProductId];

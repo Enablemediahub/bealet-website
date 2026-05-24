@@ -39,21 +39,17 @@ $productId = (int) ($_POST['review_product_id'] ?? 0);
 $rating = (int) ($_POST['rating'] ?? 0);
 $comment = trim((string) ($_POST['comment'] ?? ''));
 $reviewImagePath = trim((string) ($_POST['existing_review_image'] ?? ''));
+$guestName = trim((string) ($_POST['guest_name'] ?? ''));
+$guestEmail = trim((string) ($_POST['guest_email'] ?? ''));
 
 $response['product_id'] = $productId;
 $response['review_form'] = [
     'rating' => $rating > 0 ? $rating : 5,
     'comment' => $comment,
     'existing_review_image' => $reviewImagePath,
+    'guest_name' => $guestName,
+    'guest_email' => $guestEmail,
 ];
-
-if (!$currentUser) {
-    http_response_code(401);
-    $response['message'] = 'Please login before reviewing a product.';
-    $response['errors'][] = $response['message'];
-    echo json_encode($response);
-    exit;
-}
 
 if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
     http_response_code(422);
@@ -77,6 +73,18 @@ if ($comment === '') {
     $response['errors'][] = 'Please make your review a little more descriptive.';
 } elseif (mb_strlen($comment) > 1500) {
     $response['errors'][] = 'Please keep your review under 1500 characters.';
+}
+
+if (!$currentUser) {
+    if ($guestName === '') {
+        $response['errors'][] = 'Please share your name with this product review.';
+    }
+
+    if ($guestEmail === '') {
+        $response['errors'][] = 'Please enter your email address for this product review.';
+    } elseif (!validateEmail($guestEmail)) {
+        $response['errors'][] = 'Please enter a valid email address.';
+    }
 }
 
 if ($productId > 0) {
@@ -112,14 +120,18 @@ if (!empty($response['errors'])) {
     exit;
 }
 
-$existingProductReview = getProductReviewByUserId($productId, (int) $currentUser['id']);
+$reviewerName = $currentUser ? (string) ($currentUser['name'] ?? 'Customer') : $guestName;
+$reviewerEmail = $currentUser ? (string) ($currentUser['email'] ?? '') : $guestEmail;
+$existingProductReview = $currentUser ? getProductReviewByUserId($productId, (int) $currentUser['id']) : null;
 
 if ($existingProductReview) {
     $db->update(
         "UPDATE reviews
-         SET rating = ?, comment = ?, review_image = ?, updated_at = NOW()
+         SET reviewer_name = ?, reviewer_email = ?, rating = ?, comment = ?, review_image = ?, is_approved = 0, updated_at = NOW()
          WHERE id = ?",
         [
+            $reviewerName !== '' ? $reviewerName : null,
+            $reviewerEmail !== '' ? $reviewerEmail : null,
             $rating,
             $comment,
             $reviewImagePath !== '' ? $reviewImagePath : null,
@@ -128,11 +140,13 @@ if ($existingProductReview) {
     );
 } else {
     $db->insert(
-        "INSERT INTO reviews (product_id, user_id, rating, comment, review_image)
-         VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO reviews (product_id, user_id, reviewer_name, reviewer_email, rating, comment, review_image, is_approved)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
         [
             $productId,
-            (int) $currentUser['id'],
+            $currentUser ? (int) $currentUser['id'] : null,
+            $reviewerName !== '' ? $reviewerName : null,
+            $reviewerEmail !== '' ? $reviewerEmail : null,
             $rating,
             $comment,
             $reviewImagePath !== '' ? $reviewImagePath : null,
@@ -142,7 +156,7 @@ if ($existingProductReview) {
 
 $productReviews = getProductReviews($productId, 8);
 $response['success'] = true;
-$response['message'] = 'Your product review was saved successfully.';
+$response['message'] = 'Your product review was saved and is awaiting admin approval.';
 $response['rating'] = getProductRating($productId);
 $response['reviews'] = array_map(static function ($review) {
     return [
@@ -158,8 +172,10 @@ $response['review_form'] = [
     'rating' => $rating,
     'comment' => $comment,
     'existing_review_image' => $reviewImagePath,
+    'guest_name' => $guestName,
+    'guest_email' => $guestEmail,
 ];
 
-createLog('PRODUCT_REVIEW_SUBMITTED', 'Product review saved for product #' . $productId, (int) $currentUser['id']);
+createLog('PRODUCT_REVIEW_SUBMITTED', 'Product review saved for product #' . $productId, $currentUser['id'] ?? null);
 
 echo json_encode($response);
