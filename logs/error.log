@@ -417,3 +417,6 @@ Stack trace:
 [2026-05-29 23:30:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
 [2026-05-29 23:30:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
 [2026-05-29 23:30:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-30 09:59:18] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-30 09:59:18] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[30-May-2026 09:59:21 Africa/Accra] PHP Warning:  session_destroy(): Trying to destroy uninitialized session in C:\xampp\htdocs\bealet-website\inc\header.php on line 13

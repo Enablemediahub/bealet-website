@@ -719,12 +719,17 @@ require_once __DIR__ . '/inc/header.php';
                         <div class="modal fade" id="prescriptionModal" tabindex="-1" aria-labelledby="prescriptionModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl modal-dialog-scrollable">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <div>
-                                            <h5 class="modal-title" id="prescriptionModalLabel">Prescription Form</h5>
-                                            <small class="text-muted">Fill it in manually, upload a file, or take a live photo with your device camera.</small>
+                                    <div class="modal-header bg-black text-white border-0">
+                                        <div class="w-100">
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white" style="width: 2.25rem; height: 2.25rem;">
+                                                    <i class="fas fa-file-prescription"></i>
+                                                </span>
+                                                <h5 class="modal-title mb-0 text-white" id="prescriptionModalLabel">Prescription Form</h5>
+                                            </div>
+                                            <small class="d-block text-white-50">Fill it in manually, upload a file, or take a live photo with your device camera.</small>
                                         </div>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-check form-switch mb-4">

@@ -252,6 +252,21 @@ foreach ($tryOnProducts as $product) {
                             <select id="framePicker" class="form-select"></select>
                         </div>
 
+                        <div class="border rounded-4 p-3 bg-white mb-3">
+                            <div class="small text-uppercase text-muted mb-1">Selected Frame</div>
+                            <div id="activeFramePanelName" class="fw-semibold text-dark">Choose a frame</div>
+                            <div id="activeFramePanelBrand" class="small text-muted mb-1"></div>
+                            <div id="activeFramePanelPrice" class="small text-primary fw-semibold mb-3"></div>
+                            <div class="d-grid gap-2">
+                                <button type="button" id="buyActiveFrameBtn" class="btn btn-primary rounded-pill">
+                                    <i class="fas fa-bag-shopping me-2"></i> Buy This Frame
+                                </button>
+                                <a href="#" id="viewActiveFrameBtn" class="btn btn-outline-primary rounded-pill">
+                                    <i class="fas fa-eye me-2"></i> View Product
+                                </a>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label" for="cameraPicker">Camera</label>
                             <select id="cameraPicker" class="form-select">
@@ -348,10 +363,15 @@ foreach ($tryOnProducts as $product) {
     const loadingState = document.getElementById('tryOnLoadingState');
     const framePicker = document.getElementById('framePicker');
     const cameraPicker = document.getElementById('cameraPicker');
+    const buyActiveFrameBtn = document.getElementById('buyActiveFrameBtn');
+    const viewActiveFrameBtn = document.getElementById('viewActiveFrameBtn');
     const flipCameraBtn = document.getElementById('flipCameraBtn');
     const captureTryOnBtn = document.getElementById('captureTryOnBtn');
     const trackingStatus = document.getElementById('trackingStatus');
     const activeFrameLabel = document.getElementById('activeFrameLabel');
+    const activeFramePanelName = document.getElementById('activeFramePanelName');
+    const activeFramePanelBrand = document.getElementById('activeFramePanelBrand');
+    const activeFramePanelPrice = document.getElementById('activeFramePanelPrice');
     const manualOffsetX = document.getElementById('manualOffsetX');
     const manualOffsetXValue = document.getElementById('manualOffsetXValue');
     const manualOffsetY = document.getElementById('manualOffsetY');
@@ -403,6 +423,19 @@ foreach ($tryOnProducts as $product) {
         manualOffsetY.value = '0';
         manualScale.value = '1';
         syncFineTuneLabels();
+    }
+
+    function getActiveFrameProductUrl(frame) {
+        return `${window.BASE_URL || ''}/shop.php?view_product=${Number(frame.id)}`;
+    }
+
+    function syncActiveFramePanel() {
+        const activeFrame = getActiveFrame();
+        activeFrameLabel.textContent = activeFrame.name || 'Choose a frame';
+        activeFramePanelName.textContent = activeFrame.name || 'Choose a frame';
+        activeFramePanelBrand.textContent = activeFrame.brand || '';
+        activeFramePanelPrice.textContent = activeFrame.price || '';
+        viewActiveFrameBtn.href = getActiveFrameProductUrl(activeFrame);
     }
 
     function getPointerDistance(first, second) {
@@ -725,13 +758,13 @@ foreach ($tryOnProducts as $product) {
             framePicker.appendChild(option);
         });
         framePicker.value = String(activeFrameIndex);
-        activeFrameLabel.textContent = getActiveFrame().name;
+        syncActiveFramePanel();
     }
 
     async function selectFrame(index) {
         activeFrameIndex = Math.max(0, Math.min(index, tryOnFrames.length - 1));
         framePicker.value = String(activeFrameIndex);
-        activeFrameLabel.textContent = getActiveFrame().name;
+        syncActiveFramePanel();
         document.querySelectorAll('.tryon-frame-card').forEach((button) => {
             button.classList.toggle('btn-primary', Number(button.dataset.frameIndex) === activeFrameIndex);
             button.classList.toggle('btn-outline-secondary', Number(button.dataset.frameIndex) !== activeFrameIndex);
@@ -1011,6 +1044,10 @@ foreach ($tryOnProducts as $product) {
 
         captureTryOnBtn.addEventListener('click', captureTryOn);
         resetTryOnTuningBtn.addEventListener('click', resetFineTuneControls);
+        buyActiveFrameBtn.addEventListener('click', async () => {
+            const activeFrame = getActiveFrame();
+            await addToCart(Number(activeFrame.id), 1, 'checkout');
+        });
 
         document.querySelectorAll('.tryon-frame-card').forEach((button) => {
             button.addEventListener('click', async () => {
