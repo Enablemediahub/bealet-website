@@ -129,6 +129,13 @@ date_default_timezone_set('Africa/Accra');
 
 // Session Configuration
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    $projectSessionPath = realpath(__DIR__ . '/../') . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'sessions';
+    if (!is_dir($projectSessionPath)) {
+        @mkdir($projectSessionPath, 0775, true);
+    }
+    if (is_dir($projectSessionPath) && is_writable($projectSessionPath)) {
+        ini_set('session.save_path', $projectSessionPath);
+    }
     ini_set('session.cookie_httponly', 1);
     ini_set('session.cookie_secure', $appIsHttps ? 1 : 0);
     ini_set('session.cookie_samesite', 'Strict');

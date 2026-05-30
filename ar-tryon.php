@@ -41,8 +41,7 @@ try {
     $tryOnProducts = $db->fetchAll(
         "SELECT " . implode(', ', $selectFields) . "
          FROM products
-         WHERE category = 'frames'
-           AND is_active = 1
+         WHERE is_active = 1
            AND (
                 (ar_model_2d IS NOT NULL AND ar_model_2d <> '')
                 OR (ar_model_3d IS NOT NULL AND ar_model_3d <> '')

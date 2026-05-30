@@ -300,3 +300,120 @@
 [2026-05-23 13:01:37] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
 [2026-05-23 13:01:50] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
 [2026-05-23 13:01:50] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:23] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:26] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:43] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:43] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:28:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:28:45] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[26-May-2026 13:32:40 Africa/Accra] PHP Warning:  session_start(): open(C:\xampp\tmp\sess_25ar8pm2698sj8h0pn4j3qiim5, O_RDWR) failed: Permission denied (13) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[26-May-2026 13:32:40 Africa/Accra] PHP Warning:  session_start(): Failed to read session data: files (path: C:\xampp\tmp) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[2026-05-26 13:32:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:32:41] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-26 13:32:59] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-26 13:32:59] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[26-May-2026 15:16:37 Africa/Accra] PHP Warning:  session_start(): open(C:\xampp\tmp\sess_s4r3ocrmnb9f8dfndgtafb90rp, O_RDWR) failed: Permission denied (13) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[26-May-2026 15:16:37 Africa/Accra] PHP Warning:  session_start(): Failed to read session data: files (path: C:\xampp\tmp) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[26-May-2026 15:51:24 Africa/Accra] PHP Warning:  session_start(): open(C:\xampp\tmp\sess_n54q8ligr1mch4f66l7u7fih5r, O_RDWR) failed: Permission denied (13) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[26-May-2026 15:51:24 Africa/Accra] PHP Warning:  session_start(): Failed to read session data: files (path: C:\xampp\tmp) in C:\xampp\htdocs\bealet-website\inc\config.php on line 160
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[29-May-2026 21:24:53 Africa/Accra] PHP Fatal error:  Maximum execution time of 120 seconds exceeded in C:\xampp\htdocs\bealet-website\inc\db.php on line 17
+[2026-05-29 21:24:53] Database Connection Failed: SQLSTATE[HY000] [2006] MySQL server has gone away
+[2026-05-29 21:25:13] Database Connection Failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
+[2026-05-29 21:49:25] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.cart' doesn't exist in engine
+[2026-05-29 21:49:25] Query Execution Failed: SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[CART_TABLE_ENSURE_FAILED] SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[2026-05-29 21:49:25] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[CART_TABLE_UNAVAILABLE] SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.cart' doesn't exist in engine
+[2026-05-29 21:49:25] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.site_settings' doesn't exist in engine
+[2026-05-29 21:49:26] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine
+[29-May-2026 21:49:26 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine in C:\xampp\htdocs\bealet-website\inc\db.php:60
+Stack trace:
+#0 C:\xampp\htdocs\bealet-website\inc\db.php(60): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bealet-website\inc\db.php(74): Database->query('SHOW COLUMNS FR...', Array)
+#2 C:\xampp\htdocs\bealet-website\index.php(11): Database->fetchAll('SHOW COLUMNS FR...')
+#3 {main}
+  thrown in C:\xampp\htdocs\bealet-website\inc\db.php on line 60
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[CART_TABLE_ENSURE_FAILED] SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[CART_TABLE_ENSURE_FAILED] SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[CART_TABLE_UNAVAILABLE] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.site_settings' doesn't exist in engine
+[2026-05-29 21:49:38] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine
+[29-May-2026 21:49:38 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine in C:\xampp\htdocs\bealet-website\inc\db.php:60
+Stack trace:
+#0 C:\xampp\htdocs\bealet-website\inc\db.php(60): PDOStatement->execute(Array)
+#1 C:\xampp\htdocs\bealet-website\inc\db.php(74): Database->query('SHOW COLUMNS FR...', Array)
+#2 C:\xampp\htdocs\bealet-website\index.php(11): Database->fetchAll('SHOW COLUMNS FR...')
+#3 {main}
+  thrown in C:\xampp\htdocs\bealet-website\inc\db.php on line 60
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[CART_TABLE_ENSURE_FAILED] SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[CART_TABLE_ENSURE_FAILED] SQLSTATE[HY000]: General error: 1813 Tablespace for table '`bealet_website`.`cart`' exists. Please DISCARD the tablespace before IMPORT
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[CART_TABLE_UNAVAILABLE] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'bealet_website.cart' doesn't exist
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.site_settings' doesn't exist in engine
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.reviews' doesn't exist in engine
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine
+[2026-05-29 21:49:54] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine
+[29-May-2026 21:49:54 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.products' doesn't exist in engine in C:\xampp\htdocs\bealet-website\inc\db.php:59
+Stack trace:
+#0 C:\xampp\htdocs\bealet-website\inc\db.php(59): PDO->prepare('SELECT * FROM p...')
+#1 C:\xampp\htdocs\bealet-website\inc\db.php(74): Database->query('SELECT * FROM p...', Array)
+#2 C:\xampp\htdocs\bealet-website\shop.php(222): Database->fetchAll('SELECT * FROM p...', Array)
+#3 {main}
+  thrown in C:\xampp\htdocs\bealet-website\inc\db.php on line 59
+[2026-05-29 21:51:21] Query Execution Failed: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.users' doesn't exist in engine
+[29-May-2026 21:51:21 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1932 Table 'bealet_website.users' doesn't exist in engine in C:\xampp\htdocs\bealet-website\inc\db.php:59
+Stack trace:
+#0 C:\xampp\htdocs\bealet-website\inc\db.php(59): PDO->prepare('SELECT * FROM u...')
+#1 C:\xampp\htdocs\bealet-website\inc\db.php(69): Database->query('SELECT * FROM u...', Array)
+#2 C:\xampp\htdocs\bealet-website\admin\login.php(33): Database->fetch('SELECT * FROM u...', Array)
+#3 {main}
+  thrown in C:\xampp\htdocs\bealet-website\inc\db.php on line 59
+[2026-05-29 22:39:16] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:16] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:28] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:28] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:34] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:46] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:46] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:55] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:55] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:39:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:39:58] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:42:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:42:10] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:42:16] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:42:16] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 22:42:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 22:42:19] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 23:30:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 23:30:36] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 23:30:38] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 23:30:38] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 23:30:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 23:30:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
+[2026-05-29 23:30:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
+[2026-05-29 23:30:54] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
