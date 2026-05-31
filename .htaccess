@@ -1,16 +1,47 @@
 RewriteEngine On
-RewriteBase /bealet-website/
+RewriteBase /
+
+<IfModule mod_headers.c>
+    <FilesMatch "^(sw\.js|manifest\.webmanifest)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    <FilesMatch "\.(php|html?)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+Options -Indexes
 
 # Redirect /something.php to /something
-RewriteCond %{THE_REQUEST} \s/+bealet-website/([^\s?]+?)\.php(?:[\s?]|$) [NC]
+RewriteCond %{THE_REQUEST} \s/+([^\s?]+?)\.php(?:[\s?]|$) [NC]
 RewriteRule ^ %1 [R=301,L]
 
 # Redirect /index.php to /
-RewriteCond %{THE_REQUEST} \s/+bealet-website/index\.php(?:[\s?]|$) [NC]
-RewriteRule ^index\.php$ ./ [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+index\.php(?:[\s?]|$) [NC]
+RewriteRule ^index\.php$ / [R=301,L]
+
+# Remove trailing slash from URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+)/$ /$1 [R=301,L]
 
 # Serve extensionless URLs from matching PHP files
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^(.+?)/?$ $1.php [L]
+RewriteRule ^([^/]+?)(?:/)?$ $1.php [L]
+
+# Handle subdirectory routes if needed
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*?)/([^/]+?)$ $1/$2.php [L]

@@ -1,11 +1,39 @@
-const CACHE_NAME = 'bealet-site-shell-v1';
+const CACHE_NAME = 'bealet-site-shell-v2';
 const SCOPE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 const CORE_ASSETS = [
     `${SCOPE_PATH}/`,
-    `${SCOPE_PATH}/assets/css/style.css`,
-    `${SCOPE_PATH}/assets/js/main.js`,
     `${SCOPE_PATH}/assets/images/logo/logo.png`
 ];
+
+function isCacheableResponse(response) {
+    return response && response.ok && (response.type === 'basic' || response.type === 'default');
+}
+
+async function networkFirst(request, fallbackUrl = null) {
+    const cache = await caches.open(CACHE_NAME);
+
+    try {
+        const networkResponse = await fetch(request);
+        if (isCacheableResponse(networkResponse)) {
+            cache.put(request, networkResponse.clone()).catch(() => Promise.resolve());
+        }
+        return networkResponse;
+    } catch (error) {
+        const cachedResponse = await cache.match(request);
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+
+        if (fallbackUrl) {
+            const fallbackResponse = await cache.match(fallbackUrl);
+            if (fallbackResponse) {
+                return fallbackResponse;
+            }
+        }
+
+        throw error;
+    }
+}
 
 self.addEventListener('install', event => {
     event.waitUntil(
@@ -28,19 +56,21 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
+    const requestUrl = new URL(event.request.url);
+    const isSameOrigin = requestUrl.origin === self.location.origin;
+    const isNavigationRequest = event.request.mode === 'navigate';
 
-            return fetch(event.request).then(networkResponse => {
-                const clonedResponse = networkResponse.clone();
-                caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, clonedResponse);
-                }).catch(() => Promise.resolve());
-                return networkResponse;
-            });
-        }).catch(() => caches.match(`${SCOPE_PATH}/`))
+    if (isNavigationRequest) {
+        event.respondWith(networkFirst(event.request, `${SCOPE_PATH}/`));
+        return;
+    }
+
+    if (isSameOrigin) {
+        event.respondWith(networkFirst(event.request));
+        return;
+    }
+
+    event.respondWith(
+        fetch(event.request).catch(() => caches.match(event.request))
     );
 });

@@ -26,6 +26,8 @@ $faviconUrl = APP_URL . '/assets/images/favicon.png';
 $faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) : '1';
 $styleCssPath = __DIR__ . '/../assets/css/style.css';
 $styleCssVersion = file_exists($styleCssPath) ? (string) filemtime($styleCssPath) : '1';
+$manifestPath = __DIR__ . '/../manifest.webmanifest';
+$manifestVersion = file_exists($manifestPath) ? (string) filemtime($manifestPath) : '1';
 $currentPath = basename($_SERVER['PHP_SELF'] ?? '');
 $primaryNav = [
     ['label' => 'Home', 'href' => APP_URL . '/', 'active' => $currentPath === 'index.php' || $currentPath === ''],
@@ -73,7 +75,7 @@ $primaryNav = [
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css?v=<?php echo $styleCssVersion; ?>">
-    <link rel="manifest" href="<?php echo APP_URL; ?>/manifest.webmanifest">
+    <link rel="manifest" href="<?php echo APP_URL; ?>/manifest.webmanifest?v=<?php echo $manifestVersion; ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
     <link rel="icon" type="image/png" sizes="192x192" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
     <link rel="apple-touch-icon" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">

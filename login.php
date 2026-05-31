@@ -17,6 +17,7 @@ $email = '';
 $rememberMe = false;
 $loginWallpaperUrl = getLoginWallpaperUrl();
 $googleClientId = getGoogleClientId();
+$styleCssVersion = @filemtime(__DIR__ . '/assets/css/style.css') ?: time();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF token
@@ -105,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css?v=<?php echo $styleCssVersion; ?>">
     
     <style>
         .login-container {

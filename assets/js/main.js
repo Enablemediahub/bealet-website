@@ -738,9 +738,25 @@ window.addEventListener('appinstalled', function () {
     }
 });
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+        try {
+            if (sessionStorage.getItem('bealet_sw_refresh_done') === '1') {
+                return;
+            }
+            sessionStorage.setItem('bealet_sw_refresh_done', '1');
+        } catch (error) {
+            console.error('Unable to persist service worker refresh flag:', error);
+        }
+
+        window.location.reload();
+    });
+}
+
 window.addEventListener('load', function () {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(`${window.BASE_URL || ''}/sw.js`).catch(error => {
+        const assetVersion = window.ASSET_VERSION || '1';
+        navigator.serviceWorker.register(`${window.BASE_URL || ''}/sw.js?v=${encodeURIComponent(assetVersion)}`).catch(error => {
             console.error('Service worker registration failed:', error);
         });
     }

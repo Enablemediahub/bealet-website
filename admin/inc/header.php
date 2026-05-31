@@ -36,6 +36,7 @@ $pageTitleMap = [
 $currentPageTitle = $pageTitleMap[$currentScript] ?? 'Admin Panel';
 $profileActive = $currentScript === 'profile.php' ? 'active' : '';
 $adminCssVersion = @filemtime(__DIR__ . '/../../assets/css/admin.css') ?: time();
+$styleCssVersion = @filemtime(__DIR__ . '/../../assets/css/style.css') ?: time();
 $faviconPath = __DIR__ . '/../../assets/images/favicon.png';
 $faviconUrl = APP_URL . '/assets/images/favicon.png';
 $faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) : '1';
@@ -49,7 +50,7 @@ $faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) :
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/style.css?v=<?php echo $styleCssVersion; ?>">
     <link rel="stylesheet" href="<?php echo APP_URL; ?>/assets/css/admin.css?v=<?php echo $adminCssVersion; ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
     <link rel="apple-touch-icon" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">

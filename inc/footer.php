@@ -180,6 +180,8 @@ $whatsAppContact = getWhatsAppContactConfig();
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     
+    <script>window.ASSET_VERSION = '<?php echo $mainJsVersion; ?>';</script>
+
     <!-- Main JS -->
     <script src="<?php echo APP_URL; ?>/assets/js/main.js?v=<?php echo $mainJsVersion; ?>"></script>
     
