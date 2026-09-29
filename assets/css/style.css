@@ -1679,24 +1679,38 @@ footer {
     padding-right: 22px;
 }
 
+@media (min-width: 992px) {
+    .site-navbar .container-lg {
+        column-gap: 2rem;
+    }
+
+    .site-nav-links {
+        justify-content: center;
+    }
+}
+
 .site-brand {
     display: inline-flex;
+    flex-direction: row;
     align-items: center;
     gap: 0.8rem;
     min-width: 0;
     max-width: 520px;
-    min-height: 100px;
+    min-height: 76px;
+    text-align: left;
 }
 
 .brand-copy {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     min-width: 0;
+    text-align: left;
 }
 
 .brand-mark {
-    width: 98px;
-    height: 98px;
+    width: 72px;
+    height: 72px;
     display: grid;
     place-items: center;
     flex-shrink: 0;
@@ -1717,8 +1731,8 @@ footer {
 
 .site-brand .brand-mark img,
 .site-logo-image {
-    width: 98px;
-    height: 98px;
+    width: 72px;
+    height: 72px;
     max-width: none;
     max-height: none;
     object-fit: contain;
@@ -1727,16 +1741,16 @@ footer {
 
 .brand-text {
     font-weight: 800;
-    font-size: 1.18rem;
+    font-size: 1rem;
     letter-spacing: 0.02em;
     color: #0f172a;
     line-height: 1.05;
-    text-wrap: balance;
+    white-space: nowrap;
 }
 
 .brand-subtext {
     display: block;
-    font-size: 0.62rem;
+    font-size: 0.56rem;
     letter-spacing: 0.06em;
     color: #475569;
     min-height: 0.95rem;
@@ -1748,24 +1762,6 @@ footer {
     display: flex;
     align-items: center;
     gap: 0.85rem;
-}
-
-.track-cta-btn {
-    border-radius: 999px;
-    background: linear-gradient(135deg, #f59e0b, #f97316);
-    color: #fff;
-    font-weight: 800;
-    font-size: 0.84rem;
-    letter-spacing: 0.02em;
-    border: 0;
-    padding: 0.68rem 1rem;
-    box-shadow: 0 10px 20px rgba(249, 115, 22, 0.28);
-}
-
-.track-cta-btn:hover,
-.track-cta-btn:focus {
-    color: #fff;
-    background: linear-gradient(135deg, #d97706, #ea580c);
 }
 
 .site-nav-links {
@@ -2480,12 +2476,6 @@ footer {
         height: 78px;
     }
 
-    .track-cta-btn {
-        width: 100%;
-        text-align: center;
-        padding: 0.85rem 1rem;
-    }
-
     .site-nav-links {
         align-items: stretch;
         gap: 0.4rem;
@@ -2642,7 +2632,7 @@ footer {
     }
 
     .brand-text {
-        font-size: 0.95rem;
+        font-size: 0.78rem;
         line-height: 1.1;
     }
 
@@ -2866,7 +2856,7 @@ footer {
     }
 
     .site-brand {
-        gap: 0.65rem;
+        gap: 0.2rem;
         min-height: 64px;
         max-width: calc(100% - 72px);
     }
@@ -2883,7 +2873,7 @@ footer {
     }
 
     .brand-text {
-        font-size: 0.86rem;
+        font-size: 0.68rem;
     }
 
     .brand-subtext {

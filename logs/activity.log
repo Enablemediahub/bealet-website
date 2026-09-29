@@ -123,3 +123,12 @@
 [2026-05-31 13:03:28] [::1] [User: Guest] PRODUCT_UPDATED: Product #18 updated
 [2026-05-31 13:03:42] [::1] [User: Guest] PRODUCT_UPDATED: Product #16 updated
 [2026-05-31 13:04:02] [::1] [User: Guest] PRODUCT_UPDATED: Product #1 updated
+[2026-09-29 16:21:21] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:21:31] [::1] [User: Guest] ADMIN_LOGIN_FAILED: User not found or not admin: crepindale@bealet.com
+[2026-09-29 16:23:51] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:23:58] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:24:36] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:24:48] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:53:05] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
+[2026-09-29 16:55:48] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: bealetopticalcenter@gmail.com
+[2026-09-29 16:56:55] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: bealetopticalcenter@gmail.com

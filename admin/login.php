@@ -166,6 +166,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-sign-in-alt me-2"></i> Login
                     </button>
                 </form>
+
+                <div class="text-center mt-3">
+                    <a href="<?php echo APP_URL; ?>/forgot-password.php">Forgot password?</a>
+                </div>
             </div>
         </div>
     </div>

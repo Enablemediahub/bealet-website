@@ -352,6 +352,17 @@ async function updateCartCount() {
 
 // Utility: Add to Cart
 async function addToCart(productId, quantity = 1, mode = 'drawer') {
+    if (!window.CART_SYSTEM_ENABLED && window.CART_SYSTEM_ENABLED !== undefined) {
+        showToastNotification('The cart is temporarily disabled.', 'info');
+        return;
+    }
+
+    if (typeof window.CART_SYSTEM_ENABLED === 'undefined') {
+        window.CART_SYSTEM_ENABLED = false;
+        showToastNotification('The cart is temporarily disabled.', 'info');
+        return;
+    }
+
     try {
         const baseUrl = window.BASE_URL || '';
         const response = await fetch(buildApiUrl('add-to-cart'), {
@@ -370,7 +381,6 @@ async function addToCart(productId, quantity = 1, mode = 'drawer') {
         if (data.success) {
             showToastNotification('Product added to cart!', 'success');
             await updateCartCount();
-            const baseUrl = window.BASE_URL || '';
             if (mode === 'checkout') {
                 window.location.href = `${baseUrl}/checkout`;
             } else {

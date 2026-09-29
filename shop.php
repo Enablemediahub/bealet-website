@@ -283,7 +283,8 @@ foreach ($modalProducts as $product) {
         'category_label' => formatProductCategoryLabel($product['category'] ?? ''),
         'frame_target_label' => !empty($product['frame_target']) ? formatProductAudienceLabel($product['frame_target']) : '',
         'description' => decodeStoredText($product['description'] ?? ''),
-        'price' => formatCurrency($product['price'] ?? 0),
+        'price' => 'Price on enquiry',
+        'whatsapp_inquiry_url' => buildProductWhatsAppInquiryUrl($product),
         'stock' => (int) ($product['stock'] ?? 0),
         'gallery_images' => array_values(getProductGalleryImages($productId, $product)),
         'try_on_link' => getProductTryOnLink($product),
@@ -567,6 +568,7 @@ foreach ($products as $product) {
                             <?php $productId = (int) $product['id']; ?>
                             <?php $galleryImages = getProductGalleryImages($productId, $product); ?>
                             <?php $productTryOnLink = getProductTryOnLink($product); ?>
+                            <?php $productWhatsAppUrl = buildProductWhatsAppInquiryUrl($product); ?>
                             <?php $productImageLabel = formatProductCategoryLabel($product['category'] ?? ''); ?>
                             <?php $productImageLabelClass = 'product-image-label--' . preg_replace('/[^a-z0-9]+/i', '-', strtolower((string) ($product['category'] ?? 'other'))); ?>
                             <?php
@@ -616,7 +618,7 @@ foreach ($products as $product) {
                                     <?php endif; ?>
                                     <div class="product-info">
                                         <div class="product-name"><?php echo sanitize($product['name']); ?></div>
-                                        <div class="product-price"><?php echo formatCurrency($product['price']); ?></div>
+                                        <div class="product-price text-muted">Ask for price</div>
                                         <div class="d-flex flex-wrap gap-2 mb-2">
                                             <span class="badge text-bg-light border"><?php echo sanitize(formatProductCategoryLabel($product['category'] ?? '')); ?></span>
                                             <?php if (!empty($product['frame_target'])): ?>
@@ -650,13 +652,17 @@ foreach ($products as $product) {
                                                 <i class="fas fa-vr-cardboard me-2"></i> Try On
                                             </a>
                                             <?php endif; ?>
+                                            <?php if ($productWhatsAppUrl !== ''): ?>
+                                            <a class="btn btn-success" href="<?php echo htmlspecialchars((string) $productWhatsAppUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
+                                                <i class="fab fa-whatsapp me-2"></i> Ask on WhatsApp
+                                            </a>
+                                            <?php endif; ?>
                                             <button 
                                                 class="btn btn-primary" 
                                                 type="button"
-                                                onclick="addToCart(<?php echo $product['id']; ?>, 1)"
-                                                <?php echo $product['stock'] <= 0 ? 'disabled' : ''; ?>
+                                                disabled
                                             >
-                                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                                <i class="fas fa-shopping-cart me-2"></i> Cart Disabled
                                             </button>
                                             <button
                                                 class="btn btn-outline-primary"
@@ -790,13 +796,16 @@ foreach ($products as $product) {
                         <div class="col-lg-6">
                             <div class="product-modal-summary">
                                 <div class="d-flex flex-wrap gap-2 mb-3" id="productModalBadges"></div>
-                                <div class="product-modal-price" id="productModalPrice"></div>
+                                <div class="product-modal-price text-muted" id="productModalPrice">Price on enquiry</div>
                                 <div class="product-rating mb-3" id="productModalRating"></div>
                                 <p class="text-muted mb-3" id="productModalDescription"></p>
                                 <div class="d-flex flex-wrap gap-2 mb-4">
-                                    <button class="btn btn-primary" type="button" id="productModalAddToCartButton">
-                                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                    <button class="btn btn-primary" type="button" id="productModalAddToCartButton" disabled>
+                                        <i class="fas fa-shopping-cart me-2"></i> Cart Disabled
                                     </button>
+                                    <a class="btn btn-success d-none" href="#" id="productModalWhatsAppLink" target="_blank" rel="noopener noreferrer">
+                                        <i class="fab fa-whatsapp me-2"></i> Ask on WhatsApp
+                                    </a>
                                     <a class="btn product-tryon-cta d-none" href="#" id="productModalTryOnLink">
                                         <i class="fas fa-vr-cardboard me-2"></i> Try On
                                     </a>
@@ -1129,6 +1138,7 @@ foreach ($products as $product) {
         var descriptionElement = document.getElementById('productModalDescription');
         var reviewListElement = document.getElementById('productModalReviewList');
         var tryOnLinkElement = document.getElementById('productModalTryOnLink');
+        var whatsappLinkElement = document.getElementById('productModalWhatsAppLink');
         var addToCartButton = document.getElementById('productModalAddToCartButton');
         var reviewFormElement = document.getElementById('productReviewForm');
         var reviewProductIdInput = document.getElementById('reviewProductId');
@@ -1456,7 +1466,7 @@ foreach ($products as $product) {
             activeProductId = Number(product.id || 0);
             modalTitle.textContent = product.name || 'Product Details';
             modalMeta.textContent = product.brand ? (product.brand + ' collection') : 'Bealet collection';
-            priceElement.textContent = product.price || '';
+            priceElement.textContent = 'Price on enquiry';
             renderRatingSummary(product);
             descriptionElement.textContent = product.description || 'Premium eyewear from our latest collection.';
             buildBadges(product);
@@ -1464,9 +1474,20 @@ foreach ($products as $product) {
             buildReviews(product);
             populateReviewForm(product);
 
-            addToCartButton.disabled = Number(product.stock || 0) <= 0;
+            if (whatsappLinkElement) {
+                if (product.whatsapp_inquiry_url) {
+                    whatsappLinkElement.href = product.whatsapp_inquiry_url;
+                    whatsappLinkElement.classList.remove('d-none');
+                } else {
+                    whatsappLinkElement.href = '#';
+                    whatsappLinkElement.classList.add('d-none');
+                }
+            }
+
+            addToCartButton.disabled = true;
+            addToCartButton.textContent = 'Cart Disabled';
             addToCartButton.onclick = function () {
-                addToCart(Number(product.id || 0), 1);
+                return false;
             };
 
             if (product.try_on_link) {

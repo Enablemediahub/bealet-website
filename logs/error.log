@@ -447,3 +447,8 @@ Stack trace:
 [2026-05-31 13:04:02] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_left'
 [2026-05-31 13:04:02] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'ar_model_2d_right'
 [31-May-2026 17:30:09 Africa/Accra] PHP Warning:  session_destroy(): Trying to destroy uninitialized session in C:\xampp\htdocs\bealet-website\inc\header.php on line 13
+[2026-09-29 15:46:18] Database Connection Failed: SQLSTATE[HY000] [1049] Unknown database 'bealet_website'
+[29-Sep-2026 17:04:08 Africa/Accra] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\bealet-website\inc\functions.php on line 406
+[29-Sep-2026 17:04:08 Africa/Accra] Email send failed to crepindale@gmail.com: Password Reset Request - BEALET OPTICAL CENTER
+[2026-09-29 18:18:32] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-09-29 18:18:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'

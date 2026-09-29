@@ -410,6 +410,7 @@ $introVideoUrl = getIntroVideoUrl();
                 $featuredProductId = (int) $product['id'];
                 $featuredGalleryImages = getProductGalleryImages($featuredProductId, $product);
                 $productTryOnLink = getProductTryOnLink($product);
+                $productWhatsAppUrl = buildProductWhatsAppInquiryUrl($product);
                 $productImageLabel = formatProductCategoryLabel($product['category'] ?? '');
                 $productImageLabelClass = 'product-image-label--' . preg_replace('/[^a-z0-9]+/i', '-', strtolower((string) ($product['category'] ?? 'other')));
                 $quickProductPayload = [
@@ -453,7 +454,7 @@ $introVideoUrl = getIntroVideoUrl();
                         <?php endif; ?>
                         <div class="product-info">
                             <div class="product-name"><?php echo sanitize($product['name']); ?></div>
-                            <div class="product-price"><?php echo formatCurrency($product['price']); ?></div>
+                            <div class="product-price text-muted">Ask for price</div>
                             
                             <?php
                             $rating = getProductRating($product['id']);
@@ -473,9 +474,11 @@ $introVideoUrl = getIntroVideoUrl();
                                     <i class="fas fa-vr-cardboard me-2"></i> Try On
                                 </a>
                                 <?php endif; ?>
-                                <button class="btn btn-primary" type="button" onclick='openQuickPurchaseModal(<?php echo json_encode($quickProductPayload, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'>
-                                    <i class="fas fa-bolt me-2"></i> Buy It Now
-                                </button>
+                                <?php if ($productWhatsAppUrl !== ''): ?>
+                                <a class="btn btn-success" href="<?php echo htmlspecialchars((string) $productWhatsAppUrl, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener noreferrer">
+                                    <i class="fab fa-whatsapp me-2"></i> Ask on WhatsApp
+                                </a>
+                                <?php endif; ?>
                                 <a class="btn btn-outline-primary" href="<?php echo APP_URL; ?>/shop.php?view_product=<?php echo $featuredProductId; ?>" onclick="stopFeaturedProductGalleryAutoplay(this)">
                                     <i class="fas fa-eye me-2"></i> View Product
                                 </a>

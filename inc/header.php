@@ -29,15 +29,53 @@ $styleCssVersion = file_exists($styleCssPath) ? (string) filemtime($styleCssPath
 $manifestPath = __DIR__ . '/../manifest.webmanifest';
 $manifestVersion = file_exists($manifestPath) ? (string) filemtime($manifestPath) : '1';
 $currentPath = basename($_SERVER['PHP_SELF'] ?? '');
+$productPreview = null;
+if ($currentPath === 'shop.php' && !empty($_GET['view_product'])) {
+    $viewProductId = (int) $_GET['view_product'];
+    if ($viewProductId > 0) {
+        $productPreview = $db->fetch(
+            "SELECT * FROM products WHERE id = ? AND is_active = 1 LIMIT 1",
+            [$viewProductId]
+        );
+    }
+}
+
+$metaTitle = $companyName;
+$metaDescription = 'Premium eyewear and optical services with AR try-on';
+$metaUrl = APP_URL;
+$metaImage = $logoUrl;
+
+if ($productPreview) {
+    $metaTitle = trim((string) ($productPreview['name'] ?? $companyName));
+    $metaDescription = trim(strip_tags((string) ($productPreview['description'] ?? '')));
+    if ($metaDescription === '') {
+        $metaDescription = 'Discover this premium eyewear product from ' . $companyName . '.';
+    }
+    if (function_exists('mb_strlen') && function_exists('mb_substr') && mb_strlen($metaDescription) > 180) {
+        $metaDescription = mb_substr($metaDescription, 0, 177) . '...';
+    } elseif (strlen($metaDescription) > 180) {
+        $metaDescription = substr($metaDescription, 0, 177) . '...';
+    }
+    $metaUrl = APP_URL . '/shop.php?view_product=' . (int) $productPreview['id'];
+    $metaImage = getProductImagePath($productPreview);
+}
+
 $primaryNav = [
     ['label' => 'Home', 'href' => APP_URL . '/', 'active' => $currentPath === 'index.php' || $currentPath === ''],
     ['label' => 'Shop', 'href' => APP_URL . '/shop', 'active' => $currentPath === 'shop.php'],
     ['label' => 'Try-On', 'href' => APP_URL . '/ar-tryon', 'active' => $currentPath === 'ar-tryon.php'],
-    ['label' => 'Appointments', 'href' => APP_URL . '/appointment', 'active' => $currentPath === 'appointment.php'],
     ['label' => 'Staff', 'href' => APP_URL . '/team', 'active' => $currentPath === 'team.php'],
-    ['label' => 'Testimonials', 'href' => APP_URL . '/reviews', 'active' => $currentPath === 'reviews.php'],
-    ['label' => 'Blog', 'href' => APP_URL . '/blog', 'active' => $currentPath === 'blog.php' || $currentPath === 'blog-post.php'],
     ['label' => 'Contact', 'href' => APP_URL . '/contact', 'active' => $currentPath === 'contact.php'],
+    [
+        'label' => 'More',
+        'active' => in_array($currentPath, ['reviews.php', 'track-order.php', 'appointment.php', 'blog.php', 'blog-post.php'], true),
+        'items' => [
+            ['label' => 'Testimonials', 'href' => APP_URL . '/reviews', 'active' => $currentPath === 'reviews.php'],
+            ['label' => 'Track Shipment', 'href' => APP_URL . '/track-order', 'active' => $currentPath === 'track-order.php'],
+            ['label' => 'Appointment', 'href' => APP_URL . '/appointment', 'active' => $currentPath === 'appointment.php'],
+            ['label' => 'Blog', 'href' => APP_URL . '/blog', 'active' => $currentPath === 'blog.php' || $currentPath === 'blog-post.php'],
+        ],
+    ],
 ];
 ?>
 <!DOCTYPE html>
@@ -45,13 +83,16 @@ $primaryNav = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?php echo sanitize($companyName); ?> - Premium Eyewear and Optical Services">
+    <meta name="description" content="<?php echo sanitize($metaDescription); ?>">
     <meta name="keywords" content="eyewear, glasses, frames, lenses, optical, AR try-on">
     <meta name="author" content="<?php echo sanitize($companyName); ?>">
-    <meta property="og:title" content="<?php echo sanitize($companyName); ?>">
-    <meta property="og:description" content="Premium eyewear and optical services with AR try-on">
+    <meta property="og:title" content="<?php echo sanitize($metaTitle); ?>">
+    <meta property="og:description" content="<?php echo sanitize($metaDescription); ?>">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="<?php echo APP_URL; ?>">
+    <meta property="og:url" content="<?php echo sanitize($metaUrl); ?>">
+    <meta property="og:image" content="<?php echo sanitize($metaImage); ?>">
+    <meta property="og:image:alt" content="<?php echo sanitize($metaTitle); ?>">
+    <meta property="og:site_name" content="<?php echo sanitize($companyName); ?>">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -89,7 +130,7 @@ $primaryNav = [
                     <span class="brand-mark">
                         <img class="site-logo-image" src="<?php echo $logoUrl; ?>" alt="<?php echo sanitize($companyName); ?>" onerror="this.closest('.brand-mark').classList.add('brand-mark-fallback'); this.style.display='none';">
                     </span>
-                    <span class="brand-copy d-none d-sm-block">
+                    <span class="brand-copy">
                         <span class="brand-text"><?php echo sanitize($companyName); ?></span>
                         <span class="brand-subtext"><?php echo sanitize($displayTagline); ?></span>
                     </span>
@@ -103,17 +144,30 @@ $primaryNav = [
                     <div class="site-nav-panel ms-auto d-flex flex-column flex-lg-row align-items-lg-center w-100">
                         <ul class="navbar-nav site-nav-links flex-column flex-lg-row w-100 mb-2 mb-lg-0">
                             <?php foreach ($primaryNav as $navItem): ?>
+                            <?php if (isset($navItem['items'])): ?>
+                            <li class="nav-item dropdown">
+                                <button class="nav-link dropdown-toggle <?php echo $navItem['active'] ? 'active' : ''; ?> px-3 py-2" type="button" id="moreNavDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <?php echo $navItem['label']; ?>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="moreNavDropdown">
+                                    <?php foreach ($navItem['items'] as $moreNavItem): ?>
+                                    <li>
+                                        <a class="dropdown-item <?php echo $moreNavItem['active'] ? 'active' : ''; ?>" href="<?php echo $moreNavItem['href']; ?>">
+                                            <?php echo $moreNavItem['label']; ?>
+                                        </a>
+                                    </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
+                            <?php else: ?>
                             <li class="nav-item">
                                 <a class="nav-link <?php echo $navItem['active'] ? 'active' : ''; ?> px-3 py-2" href="<?php echo $navItem['href']; ?>" tabindex="0">
                                     <?php echo $navItem['label']; ?>
                                 </a>
                             </li>
+                            <?php endif; ?>
                             <?php endforeach; ?>
                         </ul>
-
-                        <a href="<?php echo APP_URL; ?>/track-order" class="btn track-cta-btn mb-2 mb-lg-0 ms-lg-2 w-100 w-lg-auto d-flex align-items-center justify-content-center" style="min-width:44px;min-height:44px;" tabindex="0">
-                            <i class="fas fa-location-dot me-2"></i> <span class="d-none d-sm-inline">Track Shipment</span>
-                        </a>
 
                         <div class="navbar-utils d-flex align-items-center gap-2 mt-2 mt-lg-0">
                             <?php if (isLoggedIn()): ?>
@@ -123,12 +177,14 @@ $primaryNav = [
                             </a>
                             <?php endif; ?>
 
+                            <?php if (defined('CART_SYSTEM_ENABLED') && CART_SYSTEM_ENABLED): ?>
                             <a href="<?php echo APP_URL; ?>/checkout" class="navbar-utils-item btn-icon" title="Shopping Cart" aria-label="Shopping cart" tabindex="0">
                                 <i class="fas fa-bag-shopping"></i>
                                 <?php if ($cartCount > 0): ?>
                                 <span class="badge-counter"><?php echo $cartCount; ?></span>
                                 <?php endif; ?>
                             </a>
+                            <?php endif; ?>
 
                             <div class="dropdown">
                                 <button class="navbar-utils-item account-trigger dropdown-toggle d-flex align-items-center gap-1" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Account" tabindex="0">

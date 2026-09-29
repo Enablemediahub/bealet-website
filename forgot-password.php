@@ -3,8 +3,6 @@
  * Bealet Website - Forgot Password
  */
 
-session_start();
-
 require_once __DIR__ . '/inc/header.php';
 
 $errors = [];

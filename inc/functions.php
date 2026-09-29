@@ -1732,6 +1732,39 @@ function getWhatsAppContactConfig() {
 }
 
 /**
+ * Build a WhatsApp inquiry link for a specific product.
+ */
+function buildProductWhatsAppInquiryUrl($product = []) {
+    $contact = getWhatsAppContactConfig();
+    if ($contact === null || empty($contact['phone'])) {
+        return '';
+    }
+
+    $product = (array) $product;
+    $productId = (int) ($product['id'] ?? 0);
+    $productName = trim((string) ($product['name'] ?? 'this product'));
+    $productDescription = trim(strip_tags((string) ($product['description'] ?? '')));
+
+    if ($productDescription === '') {
+        $productDescription = trim(strip_tags((string) ($product['short_description'] ?? '')));
+    }
+
+    if ($productDescription !== '' && function_exists('mb_strlen') && function_exists('mb_substr')) {
+        if (mb_strlen($productDescription) > 180) {
+            $productDescription = mb_substr($productDescription, 0, 177) . '...';
+        }
+    } elseif ($productDescription !== '' && strlen($productDescription) > 180) {
+        $productDescription = substr($productDescription, 0, 177) . '...';
+    }
+
+    $productUrl = $productId > 0 ? APP_URL . '/shop.php?view_product=' . $productId : APP_URL . '/shop';
+    $detailText = $productDescription !== '' ? $productDescription : 'View the product details and available options.';
+    $message = 'Hello! I am interested in ' . ($productName !== '' ? $productName : 'this product') . '. Please confirm if it is available and share the current selling price. Product details: ' . $detailText . ' Product link: ' . $productUrl;
+
+    return 'https://wa.me/' . $contact['phone'] . '?text=' . rawurlencode($message);
+}
+
+/**
  * Get logo URL from settings or fallback constant.
  */
 function getSiteLogoUrl() {

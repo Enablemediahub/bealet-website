@@ -19,6 +19,7 @@ $appIsHttps = (
 $appScheme = $appIsHttps ? 'https' : 'http';
 $appHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $appBasePath = '';
+$appBasePathResolved = false;
 $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? realpath((string) $_SERVER['DOCUMENT_ROOT']) : false;
 $projectRoot = realpath(dirname(__DIR__));
 
@@ -28,30 +29,62 @@ if ($documentRoot && $projectRoot) {
 
     if (strpos($normalizedProjectRoot, $normalizedDocumentRoot) === 0) {
         $appBasePath = str_replace('\\', '/', substr($normalizedProjectRoot, strlen($normalizedDocumentRoot)));
+        $appBasePathResolved = true;
     }
 }
 
-if ($appBasePath === '' && !empty($_SERVER['SCRIPT_NAME'])) {
+if (!$appBasePathResolved && $appBasePath === '' && !empty($_SERVER['SCRIPT_NAME'])) {
     $scriptName = str_replace('\\', '/', (string) $_SERVER['SCRIPT_NAME']);
     $scriptDirectory = trim(str_replace('\\', '/', dirname($scriptName)), '/');
 
     if ($scriptDirectory !== '') {
-        $pathParts = explode('/', $scriptDirectory);
-        if (end($pathParts) === 'admin') {
+        $pathParts = array_values(array_filter(explode('/', $scriptDirectory), static fn ($part) => $part !== ''));
+        if (!empty($pathParts) && end($pathParts) === 'admin') {
             array_pop($pathParts);
         }
-        $appBasePath = '/' . implode('/', $pathParts);
+        if (!empty($pathParts)) {
+            $appBasePath = '/' . implode('/', $pathParts);
+        }
+    }
+
+    $appBasePathResolved = true;
+}
+
+if (!$appBasePathResolved && $appBasePath === '' && !empty($_SERVER['REQUEST_URI'])) {
+    $requestPath = parse_url((string) $_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '';
+    $requestPath = str_replace('\\', '/', $requestPath);
+    $requestPath = trim($requestPath, '/');
+
+    if ($requestPath !== '') {
+        $pathParts = array_values(array_filter(explode('/', $requestPath), static fn ($part) => $part !== ''));
+
+        if (count($pathParts) > 1) {
+            array_pop($pathParts);
+
+            if (!empty($pathParts)) {
+                $appBasePath = '/' . implode('/', $pathParts);
+                $appBasePathResolved = true;
+            }
+        }
+    }
+}
+
+if (!$appBasePathResolved && $appBasePath === '' && $projectRoot) {
+    $projectDirectoryName = trim((string) basename($projectRoot));
+    if ($projectDirectoryName !== '' && $projectDirectoryName !== 'htdocs' && $projectDirectoryName !== '\\' && $projectDirectoryName !== '/') {
+        $appBasePath = '/' . $projectDirectoryName;
     }
 }
 
 $appBasePath = '/' . trim((string) $appBasePath, '/');
-if ($appBasePath === '/') {
+if ($appBasePath === '/' || $appBasePath === '/.') {
     $appBasePath = '';
 }
 
 define('APP_URL', $appScheme . '://' . $appHost . $appBasePath);
 define('APP_ENV', 'production'); // development, production
 define('DEBUG_MODE', APP_ENV === 'development');
+define('CART_SYSTEM_ENABLED', false);
 
 // Database Configuration
 define('DB_HOST', 'localhost');
