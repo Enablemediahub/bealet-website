@@ -452,3 +452,47 @@ Stack trace:
 [29-Sep-2026 17:04:08 Africa/Accra] Email send failed to crepindale@gmail.com: Password Reset Request - BEALET OPTICAL CENTER
 [2026-09-29 18:18:32] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
 [2026-09-29 18:18:48] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-11-16 20:50:26] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:50:38] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:50:38] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:50:38] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:51:10] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:51:58] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 20:51:58] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 23:40:37] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 23:49:10] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-16 23:49:10] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:10:00] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:10:00] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:16:27] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:16:28] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:16:59] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:16:59] Database Connection Failed: SQLSTATE[HY000] [2002] No such file or directory
+[2026-11-22 12:34:17] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[2026-11-22 12:35:49] Query Execution Failed: SQLSTATE[42S21]: Column already exists: 1060 Duplicate column name 'order_phone'
+[22-Nov-2026 12:48:08 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 494
+[22-Nov-2026 12:48:08 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 495
+[22-Nov-2026 13:12:19 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'this does not alter existing tables.
+
+CREATE TABLE IF NOT EXISTS hiring_openings' at line 1 in Command line code:1
+Stack trace:
+#0 Command line code(1): PDO->exec('this does not a...')
+#1 {main}
+  thrown in Command line code on line 1
+[22-Nov-2026 13:13:21 Africa/Accra] PHP Fatal error:  Uncaught Error: Call to undefined function getHiringCvStorageDirectory() in Command line code:1
+Stack trace:
+#0 {main}
+  thrown in Command line code on line 1
+[22-Nov-2026 13:16:10 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 513
+[22-Nov-2026 13:16:10 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 514
+[22-Nov-2026 13:16:24 Africa/Accra] PHP Warning:  mail(): Sendmail exited with non-zero exit code 127 in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 425
+[22-Nov-2026 13:16:24 Africa/Accra] Email send failed to hiring-check@example.invalid: Application received - BEALET OPTICAL CENTER
+[22-Nov-2026 13:17:09 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 513
+[22-Nov-2026 13:17:09 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 514
+[22-Nov-2026 13:17:09 Africa/Accra] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'receptionist' in 'where clause' in Command line code:1
+Stack trace:
+#0 Command line code(1): PDO->exec('UPDATE hiring_o...')
+#1 {main}
+  thrown in Command line code on line 1
+[22-Nov-2026 13:17:18 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 513
+[22-Nov-2026 13:17:18 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 514

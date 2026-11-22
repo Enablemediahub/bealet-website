@@ -132,3 +132,19 @@
 [2026-09-29 16:53:05] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: crepindale@gmail.com
 [2026-09-29 16:55:48] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: bealetopticalcenter@gmail.com
 [2026-09-29 16:56:55] [::1] [User: Guest] ADMIN_LOGIN_FAILED: Invalid password for: bealetopticalcenter@gmail.com
+[2026-11-22 13:16:24] [127.0.0.1] [User: Guest] HIRING_APPLICATION_SUBMITTED: Application BOC-HR-2026-16C4BE09B9 for Receptionist
+[2026-11-22 13:20:01] [127.0.0.1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-11-22 14:05:35] [127.0.0.1] [User: Guest] HIRING_HERO_IMAGE_UPDATED: Hiring hero image replaced
+[2026-11-22 15:36:47] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #1 updated
+[2026-11-22 15:37:23] [127.0.0.1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-11-22 15:37:40] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #2 updated
+[2026-11-22 15:38:23] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #3 updated
+[2026-11-22 15:38:31] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #4 updated
+[2026-11-22 15:38:43] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #4 updated
+[2026-11-22 15:39:00] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #5 updated
+[2026-11-22 15:39:13] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #6 updated
+[2026-11-22 15:40:17] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #2 updated
+[2026-11-22 16:29:06] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #2 updated
+[2026-11-22 17:25:26] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #2 updated
+[2026-11-22 19:12:26] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #4 updated
+[2026-11-22 19:13:00] [127.0.0.1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
