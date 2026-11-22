@@ -26,7 +26,6 @@ try {
         'name',
         'brand',
         'category',
-        'price',
         'main_image',
         'ar_model_2d',
         isset($productColumnMap['ar_model_2d_left']) ? 'ar_model_2d_left' : "'' AS ar_model_2d_left",
@@ -59,8 +58,8 @@ foreach ($tryOnProducts as $product) {
         'id' => (int) ($product['id'] ?? 0),
         'name' => (string) ($product['name'] ?? ''),
         'brand' => (string) ($product['brand'] ?? ''),
-        'price' => isset($product['price']) ? formatCurrency((float) $product['price']) : '',
         'image_url' => getProductImagePath($product),
+        'whatsapp_url' => buildProductWhatsAppInquiryUrl($product),
         'front_asset' => getTryOnAssetUrl($product['ar_model_2d'] ?? ''),
         'left_asset' => getTryOnAssetUrl($product['ar_model_2d_left'] ?? ''),
         'right_asset' => getTryOnAssetUrl($product['ar_model_2d_right'] ?? ''),
@@ -256,11 +255,10 @@ foreach ($tryOnProducts as $product) {
                             <div class="small text-uppercase text-muted mb-1">Selected Frame</div>
                             <div id="activeFramePanelName" class="fw-semibold text-dark">Choose a frame</div>
                             <div id="activeFramePanelBrand" class="small text-muted mb-1"></div>
-                            <div id="activeFramePanelPrice" class="small text-primary fw-semibold mb-3"></div>
                             <div class="d-grid gap-2">
-                                <button type="button" id="buyActiveFrameBtn" class="btn btn-primary rounded-pill">
-                                    <i class="fas fa-bag-shopping me-2"></i> Buy This Frame
-                                </button>
+                                <a href="#" id="askAboutFrameBtn" class="btn btn-success rounded-pill" target="_blank" rel="noopener noreferrer">
+                                    <i class="fab fa-whatsapp me-2"></i> Ask on WhatsApp
+                                </a>
                                 <a href="#" id="viewActiveFrameBtn" class="btn btn-outline-primary rounded-pill">
                                     <i class="fas fa-eye me-2"></i> View Product
                                 </a>
@@ -328,7 +326,6 @@ foreach ($tryOnProducts as $product) {
                                         <div class="flex-grow-1">
                                             <div class="fw-semibold text-dark"><?php echo sanitize($frame['name']); ?></div>
                                             <div class="small text-muted"><?php echo sanitize($frame['brand']); ?></div>
-                                            <div class="small text-primary mt-1"><?php echo sanitize($frame['price']); ?></div>
                                         </div>
                                         <?php if ($frame['featured']): ?>
                                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Featured</span>
@@ -363,7 +360,7 @@ foreach ($tryOnProducts as $product) {
     const loadingState = document.getElementById('tryOnLoadingState');
     const framePicker = document.getElementById('framePicker');
     const cameraPicker = document.getElementById('cameraPicker');
-    const buyActiveFrameBtn = document.getElementById('buyActiveFrameBtn');
+    const askAboutFrameBtn = document.getElementById('askAboutFrameBtn');
     const viewActiveFrameBtn = document.getElementById('viewActiveFrameBtn');
     const flipCameraBtn = document.getElementById('flipCameraBtn');
     const captureTryOnBtn = document.getElementById('captureTryOnBtn');
@@ -371,7 +368,6 @@ foreach ($tryOnProducts as $product) {
     const activeFrameLabel = document.getElementById('activeFrameLabel');
     const activeFramePanelName = document.getElementById('activeFramePanelName');
     const activeFramePanelBrand = document.getElementById('activeFramePanelBrand');
-    const activeFramePanelPrice = document.getElementById('activeFramePanelPrice');
     const manualOffsetX = document.getElementById('manualOffsetX');
     const manualOffsetXValue = document.getElementById('manualOffsetXValue');
     const manualOffsetY = document.getElementById('manualOffsetY');
@@ -394,6 +390,7 @@ foreach ($tryOnProducts as $product) {
     let glbModelRoot = null;
     let glbLights = [];
     let glbRuntimeEnabled = false;
+    let glbInitializationAttempted = false;
     const activePointers = new Map();
     let dragOrigin = null;
     let pinchOrigin = null;
@@ -434,7 +431,7 @@ foreach ($tryOnProducts as $product) {
         activeFrameLabel.textContent = activeFrame.name || 'Choose a frame';
         activeFramePanelName.textContent = activeFrame.name || 'Choose a frame';
         activeFramePanelBrand.textContent = activeFrame.brand || '';
-        activeFramePanelPrice.textContent = activeFrame.price || '';
+        askAboutFrameBtn.href = activeFrame.whatsapp_url || '#';
         viewActiveFrameBtn.href = getActiveFrameProductUrl(activeFrame);
     }
 
@@ -684,6 +681,11 @@ foreach ($tryOnProducts as $product) {
     }
 
     function initGlbScene() {
+        if (glbInitializationAttempted) {
+            return glbRuntimeEnabled;
+        }
+        glbInitializationAttempted = true;
+
         if (!window.THREE || !glbCanvas || typeof THREE.WebGLRenderer !== 'function') {
             glbRuntimeEnabled = false;
             return false;
@@ -746,6 +748,9 @@ foreach ($tryOnProducts as $product) {
             preloadImage(frame.left_asset),
             preloadImage(frame.right_asset),
         ]);
+        if (frame.glb_asset && !glbInitializationAttempted) {
+            initGlbScene();
+        }
         await syncActiveGlbModel();
     }
 
@@ -1002,7 +1007,6 @@ foreach ($tryOnProducts as $product) {
     document.addEventListener('DOMContentLoaded', async () => {
         resizeCanvas();
         populateFramePicker();
-        initGlbScene();
 
         try {
             const requestedFrameIndex = requestedFrameId
@@ -1044,10 +1048,6 @@ foreach ($tryOnProducts as $product) {
 
         captureTryOnBtn.addEventListener('click', captureTryOn);
         resetTryOnTuningBtn.addEventListener('click', resetFineTuneControls);
-        buyActiveFrameBtn.addEventListener('click', async () => {
-            const activeFrame = getActiveFrame();
-            await addToCart(Number(activeFrame.id), 1, 'checkout');
-        });
 
         document.querySelectorAll('.tryon-frame-card').forEach((button) => {
             button.addEventListener('click', async () => {

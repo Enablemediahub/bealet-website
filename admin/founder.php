@@ -291,7 +291,7 @@ require_once __DIR__ . '/inc/header.php';
             <h2 class="mb-1">Founder Story & Digital Museum</h2>
             <p class="text-muted mb-0">Manage the homepage spotlight, the dedicated founder page, and the museum gallery items.</p>
         </div>
-        <a href="<?php echo APP_URL; ?>/founder" class="btn btn-outline-primary">
+        <a href="<?php echo APP_URL; ?>/founder.php" class="btn btn-outline-primary">
             <i class="fas fa-arrow-up-right-from-square me-2"></i> Preview Founder Page
         </a>
     </div>

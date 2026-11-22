@@ -114,3 +114,18 @@ function getContactFormReplyTemplate($name, $message) {
         <p>Best regards,<br>" . APP_NAME . " Team</p>
     " . getEmailFooter();
 }
+
+function getHiringApplicationConfirmationTemplate($applicantName, $roleTitle, $applicationCode) {
+    $safeName = htmlspecialchars($applicantName, ENT_QUOTES, 'UTF-8');
+    $safeRole = htmlspecialchars($roleTitle, ENT_QUOTES, 'UTF-8');
+    $safeCode = htmlspecialchars($applicationCode, ENT_QUOTES, 'UTF-8');
+
+    return getEmailHeader('Application Received') . "
+        <p>Dear $safeName,</p>
+        <p>Thank you for applying to join " . APP_NAME . ". We have received your application for <strong>$safeRole</strong>.</p>
+        <p>Your application reference is <strong>$safeCode</strong>. Please keep it for your records.</p>
+        <p>Our hiring team will review your application and contact you if your experience matches the role.</p>
+        <p>Thank you for your interest in working with us.</p>
+        <p>Best regards,<br>" . APP_NAME . " Hiring Team</p>
+    " . getEmailFooter();
+}

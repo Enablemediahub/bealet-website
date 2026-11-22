@@ -40,10 +40,10 @@ if ($currentPath === 'shop.php' && !empty($_GET['view_product'])) {
     }
 }
 
-$metaTitle = $companyName;
-$metaDescription = 'Premium eyewear and optical services with AR try-on';
-$metaUrl = APP_URL;
-$metaImage = $logoUrl;
+$metaTitle = $pageMetaTitle ?? $companyName;
+$metaDescription = $pageMetaDescription ?? 'Premium eyewear and optical services with AR try-on';
+$metaUrl = $pageMetaUrl ?? APP_URL;
+$metaImage = $pageMetaImage ?? $logoUrl;
 
 if ($productPreview) {
     $metaTitle = trim((string) ($productPreview['name'] ?? $companyName));
@@ -62,18 +62,20 @@ if ($productPreview) {
 
 $primaryNav = [
     ['label' => 'Home', 'href' => APP_URL . '/', 'active' => $currentPath === 'index.php' || $currentPath === ''],
-    ['label' => 'Shop', 'href' => APP_URL . '/shop', 'active' => $currentPath === 'shop.php'],
-    ['label' => 'Try-On', 'href' => APP_URL . '/ar-tryon', 'active' => $currentPath === 'ar-tryon.php'],
-    ['label' => 'Staff', 'href' => APP_URL . '/team', 'active' => $currentPath === 'team.php'],
-    ['label' => 'Contact', 'href' => APP_URL . '/contact', 'active' => $currentPath === 'contact.php'],
+    ['label' => 'Shop', 'href' => APP_URL . '/shop.php', 'active' => $currentPath === 'shop.php'],
+    ['label' => 'Try-On', 'href' => APP_URL . '/ar-tryon.php', 'active' => $currentPath === 'ar-tryon.php'],
+    ['label' => 'Staff', 'href' => APP_URL . '/team.php', 'active' => $currentPath === 'team.php'],
+    ['label' => 'Contact', 'href' => APP_URL . '/contact.php', 'active' => $currentPath === 'contact.php'],
     [
         'label' => 'More',
-        'active' => in_array($currentPath, ['reviews.php', 'track-order.php', 'appointment.php', 'blog.php', 'blog-post.php'], true),
+        'active' => in_array($currentPath, ['reviews.php', 'track-order.php', 'appointment.php', 'blog.php', 'blog-post.php', 'hiring.php', 'founder.php'], true),
         'items' => [
-            ['label' => 'Testimonials', 'href' => APP_URL . '/reviews', 'active' => $currentPath === 'reviews.php'],
-            ['label' => 'Track Shipment', 'href' => APP_URL . '/track-order', 'active' => $currentPath === 'track-order.php'],
-            ['label' => 'Appointment', 'href' => APP_URL . '/appointment', 'active' => $currentPath === 'appointment.php'],
-            ['label' => 'Blog', 'href' => APP_URL . '/blog', 'active' => $currentPath === 'blog.php' || $currentPath === 'blog-post.php'],
+            ['label' => 'Testimonials', 'href' => APP_URL . '/reviews.php', 'active' => $currentPath === 'reviews.php'],
+            ['label' => 'Founder Spotlight', 'href' => APP_URL . '/founder.php', 'active' => $currentPath === 'founder.php'],
+            ['label' => 'Track Shipment', 'href' => APP_URL . '/track-order.php', 'active' => $currentPath === 'track-order.php'],
+            ['label' => 'Appointment', 'href' => APP_URL . '/appointment.php', 'active' => $currentPath === 'appointment.php'],
+            ['label' => 'Blog', 'href' => APP_URL . '/blog.php', 'active' => $currentPath === 'blog.php' || $currentPath === 'blog-post.php'],
+            ['label' => 'Careers', 'href' => APP_URL . '/hiring.php', 'active' => $currentPath === 'hiring.php'],
         ],
     ],
 ];
@@ -93,12 +95,19 @@ $primaryNav = [
     <meta property="og:image" content="<?php echo sanitize($metaImage); ?>">
     <meta property="og:image:alt" content="<?php echo sanitize($metaTitle); ?>">
     <meta property="og:site_name" content="<?php echo sanitize($companyName); ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo sanitize($metaTitle); ?>">
+    <meta name="twitter:description" content="<?php echo sanitize($metaDescription); ?>">
+    <meta name="twitter:image" content="<?php echo sanitize($metaImage); ?>">
+    <?php if (!empty($pageMetaUrl)): ?>
+    <link rel="canonical" href="<?php echo sanitize($pageMetaUrl); ?>">
+    <?php endif; ?>
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="<?php echo sanitize($companyName); ?>">
     
-    <title><?php echo getPageTitle(); ?></title>
+    <title><?php echo sanitize($pageMetaTitle ?? getPageTitle()); ?></title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -121,7 +130,7 @@ $primaryNav = [
     <link rel="icon" type="image/png" sizes="192x192" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
     <link rel="apple-touch-icon" href="<?php echo $faviconUrl; ?>?v=<?php echo $faviconVersion; ?>">
 </head>
-<body>
+<body<?php echo ($currentPath === 'index.php' || $currentPath === '') ? ' class="home-page"' : ''; ?>>
     <script>window.BASE_URL = '<?php echo APP_URL; ?>';</script>
     <header class="site-header-wrap">
         <nav class="navbar navbar-expand-lg site-navbar" aria-label="Main navigation">
@@ -171,14 +180,14 @@ $primaryNav = [
 
                         <div class="navbar-utils d-flex align-items-center gap-2 mt-2 mt-lg-0">
                             <?php if (isLoggedIn()): ?>
-                            <a href="<?php echo APP_URL; ?>/wishlist" class="navbar-utils-item btn-icon" title="Wishlist" aria-label="Wishlist" tabindex="0">
+                            <a href="<?php echo APP_URL; ?>/wishlist.php" class="navbar-utils-item btn-icon" title="Wishlist" aria-label="Wishlist" tabindex="0">
                                 <i class="fas fa-heart"></i>
                                 <span class="badge-counter"><?php echo getWishlistCount(); ?></span>
                             </a>
                             <?php endif; ?>
 
                             <?php if (defined('CART_SYSTEM_ENABLED') && CART_SYSTEM_ENABLED): ?>
-                            <a href="<?php echo APP_URL; ?>/checkout" class="navbar-utils-item btn-icon" title="Shopping Cart" aria-label="Shopping cart" tabindex="0">
+                            <a href="<?php echo APP_URL; ?>/checkout.php" class="navbar-utils-item btn-icon" title="Shopping Cart" aria-label="Shopping cart" tabindex="0">
                                 <i class="fas fa-bag-shopping"></i>
                                 <?php if ($cartCount > 0): ?>
                                 <span class="badge-counter"><?php echo $cartCount; ?></span>
@@ -193,18 +202,18 @@ $primaryNav = [
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <?php if (isLoggedIn()): ?>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/profile"><i class="fas fa-user"></i> My Profile</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/my-orders"><i class="fas fa-box"></i> My Orders</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/wishlist"><i class="fas fa-heart"></i> Wishlist</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/profile.php"><i class="fas fa-user"></i> My Profile</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/my-orders.php"><i class="fas fa-box"></i> My Orders</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/wishlist.php"><i class="fas fa-heart"></i> Wishlist</a></li>
                                     <?php if (isAdmin()): ?>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/admin/"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a></li>
                                     <?php endif; ?>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="<?php echo APP_URL; ?>/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                                    <li><a class="dropdown-item text-danger" href="<?php echo APP_URL; ?>/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                                 <?php else: ?>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/register"><i class="fas fa-user-plus"></i> Register</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/login.php"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo APP_URL; ?>/register.php"><i class="fas fa-user-plus"></i> Register</a></li>
                                 <?php endif; ?>
                                 </ul>
                             </div>

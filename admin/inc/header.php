@@ -32,6 +32,7 @@ $pageTitleMap = [
     'hero-slides.php' => 'Hero Slides',
     'settings.php' => 'Site Settings',
     'profile.php' => 'Profile',
+    'hiring.php' => 'Hiring Portal',
 ];
 $currentPageTitle = $pageTitleMap[$currentScript] ?? 'Admin Panel';
 $profileActive = $currentScript === 'profile.php' ? 'active' : '';
@@ -130,6 +131,12 @@ $faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) :
                     <i class="fas fa-envelope"></i>
                     <span>Messages</span>
                 </a>
+                <?php if ($isSuperAdminUser): ?>
+                    <a href="<?php echo APP_URL; ?>/admin/hiring.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'hiring.php') !== false ? 'active' : ''; ?>">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Hiring</span>
+                    </a>
+                <?php endif; ?>
                 <a href="reviews.php" class="nav-link <?php echo strpos($_SERVER['PHP_SELF'], 'reviews.php') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-star-half-stroke"></i>
                     <span>Reviews</span>

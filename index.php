@@ -281,7 +281,7 @@ $introVideoUrl = getIntroVideoUrl();
 
 <div id="homepageShell" class="homepage-shell<?php echo $introVideoUrl !== '' ? ' is-intro-hidden' : ''; ?>">
     <!-- Hero Section -->
-    <section class="section-spacing">
+    <section class="section-spacing home-hero-section">
         <div class="container-lg">
             <div class="hero-shell">
                 <div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5000">
@@ -646,7 +646,7 @@ $introVideoUrl = getIntroVideoUrl();
                         <?php if ($founderProfile['quote'] !== ''): ?>
                         <blockquote class="founder-quote mb-4">"<?php echo sanitize($founderProfile['quote']); ?>"</blockquote>
                         <?php endif; ?>
-                        <a href="<?php echo APP_URL; ?>/founder" class="btn btn-primary btn-lg">
+                        <a href="<?php echo APP_URL; ?>/founder.php" class="btn btn-primary btn-lg">
                             <i class="fas fa-book-open me-2"></i> Read Her Story
                         </a>
                     </div>

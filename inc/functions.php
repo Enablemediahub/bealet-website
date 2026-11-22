@@ -224,6 +224,110 @@ function generateTrackingCode($customerName = '') {
 }
 
 /**
+ * Generate a non-sequential hiring application reference.
+ */
+function generateHiringApplicationCode() {
+    return 'BOC-HR-' . date('Y') . '-' . strtoupper(bin2hex(random_bytes(5)));
+}
+
+/**
+ * Store applicant CVs beside, not inside, the public web root.
+ */
+function getHiringCvStorageDirectory() {
+    $projectRoot = dirname(__DIR__);
+    $privateDirectory = basename($projectRoot) . '-private';
+
+    return dirname($projectRoot, 2)
+        . DIRECTORY_SEPARATOR . $privateDirectory
+        . DIRECTORY_SEPARATOR . 'hiring-cvs';
+}
+
+/**
+ * Validate and store a public hiring-page image.
+ */
+function saveHiringImageUpload($file) {
+    if (!is_array($file) || (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ((int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('The image upload did not complete. Please try again.');
+    }
+
+    if ((int) ($file['size'] ?? 0) < 1 || (int) $file['size'] > 5 * 1024 * 1024) {
+        throw new InvalidArgumentException('Images must be 5 MB or smaller.');
+    }
+
+    if (
+        empty($file['tmp_name'])
+        || !is_uploaded_file($file['tmp_name'])
+        || !function_exists('finfo_open')
+        || !function_exists('getimagesize')
+    ) {
+        throw new InvalidArgumentException('Upload a valid JPEG, PNG, or WebP image.');
+    }
+
+    $imageInfo = getimagesize($file['tmp_name']);
+    $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+    if (!$fileInfo) {
+        throw new RuntimeException('Unable to verify the uploaded image type.');
+    }
+    $mimeType = finfo_file($fileInfo, $file['tmp_name']);
+    finfo_close($fileInfo);
+
+    $allowedTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+    $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    $imageMime = is_array($imageInfo) ? ($imageInfo['mime'] ?? '') : '';
+    $validExtension = $imageMime === 'image/jpeg'
+        ? in_array($extension, ['jpg', 'jpeg'], true)
+        : $extension === ($allowedTypes[$imageMime] ?? '');
+    if (
+        !$imageInfo
+        || !isset($allowedTypes[$imageMime])
+        || $mimeType !== $imageMime
+        || !$validExtension
+    ) {
+        throw new InvalidArgumentException('Upload a valid JPEG, PNG, or WebP image.');
+    }
+
+    $uploadDirectory = __DIR__ . '/../assets/uploads/hiring';
+    if (!is_dir($uploadDirectory) && !mkdir($uploadDirectory, 0755, true) && !is_dir($uploadDirectory)) {
+        throw new RuntimeException('Unable to create hiring image storage.');
+    }
+    if (!is_writable($uploadDirectory)) {
+        throw new RuntimeException('Hiring image storage is not writable.');
+    }
+
+    $filename = bin2hex(random_bytes(16)) . '.' . $allowedTypes[$mimeType];
+    $imagePath = $uploadDirectory . DIRECTORY_SEPARATOR . $filename;
+    if (!move_uploaded_file($file['tmp_name'], $imagePath)) {
+        throw new RuntimeException('Unable to store the uploaded image.');
+    }
+    if (!chmod($imagePath, 0644)) {
+        unlink($imagePath);
+        throw new RuntimeException('Unable to secure the uploaded image.');
+    }
+
+    return $filename;
+}
+
+/**
+ * Remove a hiring image previously saved by saveHiringImageUpload().
+ */
+function deleteHiringImageFile($filename) {
+    if (!preg_match('/\A[a-f0-9]{32}\.(?:jpg|png|webp)\z/', (string) $filename)) {
+        return false;
+    }
+
+    $imagePath = __DIR__ . '/../assets/uploads/hiring/' . $filename;
+    return !is_file($imagePath) || unlink($imagePath);
+}
+
+/**
  * Get Current User
  */
 function getCurrentUser() {
