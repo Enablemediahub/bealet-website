@@ -5,15 +5,29 @@
 
 $projectRoot = dirname(__DIR__);
 $composerAutoload = $projectRoot . '/vendor/autoload.php';
+$mailEnvironmentStatus = 'composer_autoload_missing';
 if (is_file($composerAutoload)) {
     require_once $composerAutoload;
     if (class_exists(\Dotenv\Dotenv::class)) {
         $envFile = getenv('BEALET_ENV_FILE') ?: dirname($projectRoot) . '/bealet-website-private/.env';
-        if (is_file($envFile)) {
-            \Dotenv\Dotenv::createImmutable(dirname($envFile), basename($envFile))->safeLoad();
+        if (!is_file($envFile)) {
+            $mailEnvironmentStatus = 'file_missing';
+        } elseif (!is_readable($envFile)) {
+            $mailEnvironmentStatus = 'file_unreadable';
+        } else {
+            try {
+                \Dotenv\Dotenv::createImmutable(dirname($envFile), basename($envFile))->safeLoad();
+                $mailEnvironmentStatus = 'loaded';
+            } catch (\Dotenv\Exception\InvalidFileException $e) {
+                $mailEnvironmentStatus = 'invalid_format';
+                error_log('Private mail configuration has invalid dotenv syntax.');
+            }
         }
+    } else {
+        $mailEnvironmentStatus = 'dotenv_missing';
     }
 }
+$GLOBALS['bealetMailEnvironmentStatus'] = $mailEnvironmentStatus;
 
 /**
  * Generate CSRF Token
@@ -523,19 +537,71 @@ function getMailSetting($key, $default = '') {
     return trim((string) $value);
 }
 
-function sendEmail($to, $subject, $body, $isHtml = true) {
+function getMailTransportDiagnostics() {
+    $projectRoot = dirname(__DIR__);
+    $composerAutoload = $projectRoot . '/vendor/autoload.php';
+    $envFile = getenv('BEALET_ENV_FILE') ?: dirname($projectRoot) . '/bealet-website-private/.env';
+    $username = getMailSetting('MAIL_USERNAME');
+    $password = getMailSetting('MAIL_PASSWORD');
+    $fromEmail = getMailSetting('MAIL_FROM', defined('MAIL_FROM') ? MAIL_FROM : '');
+    $notificationEmail = getMailSetting('HIRING_NOTIFICATION_EMAIL');
+    $hasSmtpCredentials = $username !== '' && $password !== '';
+
+    return [
+        'environment_status' => $GLOBALS['bealetMailEnvironmentStatus'] ?? 'unknown',
+        'private_env_readable' => is_readable($envFile),
+        'composer_autoload_present' => is_file($composerAutoload),
+        'phpmailer_available' => class_exists(\PHPMailer\PHPMailer\PHPMailer::class),
+        'smtp_username_configured' => $username !== '',
+        'smtp_password_configured' => $password !== '',
+        'sender_address_valid' => filter_var($fromEmail, FILTER_VALIDATE_EMAIL) !== false,
+        'notification_address_valid' => filter_var($notificationEmail, FILTER_VALIDATE_EMAIL) !== false,
+        'transport' => $hasSmtpCredentials
+            ? 'smtp'
+            : (($username !== '' || $password !== '') ? 'incomplete_smtp' : 'php_mail'),
+        'smtp_host' => getMailSetting('MAIL_HOST', defined('MAIL_HOST') ? MAIL_HOST : 'smtp.gmail.com'),
+        'smtp_port' => (int) getMailSetting('MAIL_PORT', defined('MAIL_PORT') ? (string) MAIL_PORT : '587'),
+        'smtp_encryption' => strtolower(getMailSetting('MAIL_ENCRYPTION', defined('MAIL_ENCRYPTION') ? MAIL_ENCRYPTION : 'tls')),
+    ];
+}
+
+function getSmtpDiagnosticCode($message, $fallback) {
+    $message = strtolower((string) $message);
+    if (strpos($message, 'authenticat') !== false || strpos($message, '535') !== false) {
+        return 'smtp_authentication_failed';
+    }
+    if (strpos($message, 'timed out') !== false || strpos($message, 'timeout') !== false) {
+        return 'smtp_timeout';
+    }
+    if (strpos($message, 'connect') !== false || strpos($message, 'network') !== false) {
+        return 'smtp_connection_failed';
+    }
+
+    return $fallback;
+}
+
+function sendEmail($to, $subject, $body, $isHtml = true, &$diagnosticCode = null) {
+    $diagnosticCode = null;
+    if (($GLOBALS['bealetMailEnvironmentStatus'] ?? '') === 'invalid_format') {
+        $diagnosticCode = 'mail_env_invalid_format';
+        error_log('Email send failed: private mail configuration has invalid dotenv syntax.');
+        return false;
+    }
+
     $username = getMailSetting('MAIL_USERNAME');
     $password = getMailSetting('MAIL_PASSWORD');
     $fromEmail = getMailSetting('MAIL_FROM', defined('MAIL_FROM') ? MAIL_FROM : '');
     $fromName = getMailSetting('MAIL_FROM_NAME', defined('APP_NAME') ? APP_NAME : '');
 
     if (($username === '') !== ($password === '')) {
+        $diagnosticCode = 'smtp_credentials_incomplete';
         error_log('Email send failed: SMTP username and password must both be configured.');
         return false;
     }
 
     if ($username !== '') {
         if (!class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
+            $diagnosticCode = 'phpmailer_missing';
             error_log('Email send failed: PHPMailer is unavailable. Run Composer install.');
             return false;
         }
@@ -545,6 +611,7 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
         $encryption = strtolower(getMailSetting('MAIL_ENCRYPTION', defined('MAIL_ENCRYPTION') ? MAIL_ENCRYPTION : 'tls'));
 
         if ($host === '' || $port < 1 || !filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+            $diagnosticCode = 'smtp_configuration_invalid';
             error_log('Email send failed: SMTP host, port, or sender address is invalid.');
             return false;
         }
@@ -552,6 +619,7 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
         try {
             $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
             $mailer->isSMTP();
+            $mailer->Timeout = 10;
             $mailer->Host = $host;
             $mailer->SMTPAuth = true;
             $mailer->Username = $username;
@@ -569,12 +637,18 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
             } elseif ($encryption === 'ssl') {
                 $mailer->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
             } else {
+                $diagnosticCode = 'smtp_encryption_invalid';
                 error_log('Email send failed: SMTP encryption must be tls or ssl.');
                 return false;
             }
 
-            return $mailer->send();
+            $sent = $mailer->send();
+            if (!$sent) {
+                $diagnosticCode = 'smtp_send_failed';
+            }
+            return $sent;
         } catch (\PHPMailer\PHPMailer\Exception $e) {
+            $diagnosticCode = getSmtpDiagnosticCode($e->getMessage(), 'smtp_send_failed');
             error_log('SMTP email send failed: ' . $e->getMessage());
             return false;
         }
@@ -587,6 +661,7 @@ function sendEmail($to, $subject, $body, $isHtml = true) {
     $result = mail($to, $subject, $body, $headers);
     
     if (!$result) {
+        $diagnosticCode = 'php_mail_failed';
         error_log("Email send failed to $to: $subject");
     }
     

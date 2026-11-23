@@ -11,6 +11,12 @@ require_once __DIR__ . '/includes/send-email.php';
 global $db;
 
 $errors = [];
+$applicationLookupError = '';
+$applicationLookupResult = null;
+$applicationLookupData = [
+    'code' => '',
+    'email' => '',
+];
 $formData = [
     'role' => trim((string) ($_GET['role'] ?? '')),
     'name' => '',
@@ -21,7 +27,38 @@ $formData = [
 $success = $_SESSION['hiring_application_success'] ?? null;
 unset($_SESSION['hiring_application_success']);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_action'] ?? '') === 'lookup_application') {
+    $applicationLookupData = [
+        'code' => strtoupper(trim((string) ($_POST['application_code'] ?? ''))),
+        'email' => strtolower(trim((string) ($_POST['application_email'] ?? ''))),
+    ];
+
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        $applicationLookupError = 'Your form session expired. Refresh the page and try again.';
+    } elseif (
+        $applicationLookupData['code'] === ''
+        || strlen($applicationLookupData['code']) > 32
+        || !filter_var($applicationLookupData['email'], FILTER_VALIDATE_EMAIL)
+        || strlen($applicationLookupData['email']) > 254
+    ) {
+        $applicationLookupError = 'Enter a valid application code and the email address used when applying.';
+    } else {
+        $applicationLookupResult = $db->fetch(
+            "SELECT application_code, opening_title_snapshot, status, submitted_at, updated_at
+             FROM hiring_applications
+             WHERE application_code = ? AND LOWER(applicant_email) = ?
+             LIMIT 1",
+            [
+                $applicationLookupData['code'],
+                $applicationLookupData['email'],
+            ]
+        );
+
+        if (!$applicationLookupResult) {
+            $applicationLookupError = 'We could not find an application matching those details. Check them and try again.';
+        }
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $formData = [
         'role' => trim((string) ($_POST['role'] ?? '')),
         'name' => trim((string) ($_POST['name'] ?? '')),
@@ -201,6 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($errors)) {
             $emailSent = false;
+            $emailDiagnosticCode = null;
             try {
                 $emailSent = sendEmail(
                     $formData['email'],
@@ -209,15 +247,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $formData['name'],
                         (string) $opening['title'],
                         $applicationCode
-                    )
+                    ),
+                    true,
+                    $emailDiagnosticCode
                 );
             } catch (Throwable $e) {
+                $emailDiagnosticCode = 'email_processing_error';
                 createLog('HIRING_CONFIRMATION_EMAIL_ERROR', $e->getMessage());
             }
 
             $hiringNotificationEmail = getMailSetting('HIRING_NOTIFICATION_EMAIL');
             $hiringNotificationSent = false;
+            $hiringNotificationDiagnosticCode = null;
             if ($hiringNotificationEmail === '' || !filter_var($hiringNotificationEmail, FILTER_VALIDATE_EMAIL)) {
+                $hiringNotificationDiagnosticCode = 'hiring_notification_address_invalid';
                 createLog('HIRING_NOTIFICATION_EMAIL_ERROR', 'Hiring notification email is not configured.');
             } else {
                 try {
@@ -228,12 +271,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $formData['name'],
                             (string) $opening['title'],
                             $applicationCode
-                        )
+                        ),
+                        true,
+                        $hiringNotificationDiagnosticCode
                     );
                     if (!$hiringNotificationSent) {
                         createLog('HIRING_NOTIFICATION_EMAIL_ERROR', 'Hiring notification was not accepted by the email transport.');
                     }
                 } catch (Throwable $e) {
+                    $hiringNotificationDiagnosticCode = 'email_processing_error';
                     createLog('HIRING_NOTIFICATION_EMAIL_ERROR', $e->getMessage());
                 }
             }
@@ -248,6 +294,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'code' => $applicationCode,
                 'email' => $formData['email'],
                 'email_sent' => $emailSent,
+                'mail_diagnostics' => [
+                    'confirmation_code' => $emailDiagnosticCode,
+                    'notification_code' => $hiringNotificationDiagnosticCode,
+                    'notification_sent' => $hiringNotificationSent,
+                    'transport' => getMailTransportDiagnostics(),
+                ],
             ];
             redirect(APP_URL . '/hiring.php', 303);
         }
@@ -303,6 +355,35 @@ if ($sharedRole !== null) {
     $pageMetaImage = $shareImage;
 }
 
+$mailDiagnosticMessages = [
+    'mail_env_invalid_format' => 'The private .env file could not be parsed; check its key=value formatting.',
+    'smtp_credentials_missing' => 'SMTP credentials are not configured.',
+    'smtp_credentials_incomplete' => 'The SMTP username and App Password are not both configured.',
+    'phpmailer_missing' => 'PHPMailer is unavailable; check that the vendor dependencies were uploaded.',
+    'smtp_configuration_invalid' => 'The SMTP host, port, or sender address is invalid.',
+    'smtp_encryption_invalid' => 'MAIL_ENCRYPTION must be set to tls or ssl.',
+    'smtp_authentication_failed' => 'The SMTP server rejected authentication; verify the account and App Password.',
+    'smtp_timeout' => 'The SMTP server did not respond before the connection timeout.',
+    'smtp_connection_failed' => 'Could not connect to the SMTP server; verify the host, port, and hosting network access.',
+    'smtp_send_failed' => 'The SMTP server failed to accept the message; check the PHP error log for details.',
+    'php_mail_failed' => 'The PHP mail() transport failed.',
+    'hiring_notification_address_invalid' => 'HIRING_NOTIFICATION_EMAIL is missing or invalid.',
+    'email_processing_error' => 'An unexpected email processing error occurred; check the PHP error log.',
+];
+$mailEnvironmentStatusLabels = [
+    'loaded' => 'Parsed successfully',
+    'file_missing' => 'File not found',
+    'file_unreadable' => 'File is not readable by PHP',
+    'invalid_format' => 'Invalid dotenv syntax',
+    'composer_autoload_missing' => 'Composer autoload file is missing',
+    'dotenv_missing' => 'dotenv library is missing',
+];
+$mailTransportLabels = [
+    'smtp' => 'SMTP',
+    'php_mail' => 'PHP mail() fallback',
+    'incomplete_smtp' => 'Incomplete SMTP configuration',
+];
+
 require_once __DIR__ . '/inc/header.php';
 ?>
 
@@ -336,9 +417,112 @@ require_once __DIR__ . '/inc/header.php';
                         We could not send the confirmation email. Please save your application code and contact us if you need help.
                     <?php endif; ?>
                 </p>
+                <?php
+                $mailDiagnostics = $success['mail_diagnostics'] ?? null;
+                $mailDiagnosticsHaveErrors = is_array($mailDiagnostics)
+                    && (empty($success['email_sent']) || empty($mailDiagnostics['notification_sent']));
+                ?>
+                <?php if (isSuperAdmin() && $mailDiagnosticsHaveErrors): ?>
+                <?php
+                $transportDiagnostics = $mailDiagnostics['transport'] ?? [];
+                $confirmationCode = $mailDiagnostics['confirmation_code'] ?? '';
+                $notificationCode = $mailDiagnostics['notification_code'] ?? '';
+                ?>
+                <details class="hiring-mail-diagnostics mt-3">
+                    <summary>Mail diagnostics (super admin only)</summary>
+                    <div class="mt-2">
+                        <p class="mb-2"><strong>Confirmation:</strong>
+                            <?php echo !empty($success['email_sent']) ? 'accepted by transport' : sanitize($mailDiagnosticMessages[$confirmationCode] ?? 'No specific failure code was captured.'); ?>
+                        </p>
+                        <p class="mb-2"><strong>Hiring inbox alert:</strong>
+                            <?php echo !empty($mailDiagnostics['notification_sent']) ? 'accepted by transport' : sanitize($mailDiagnosticMessages[$notificationCode] ?? 'No specific failure code was captured.'); ?>
+                        </p>
+                        <ul class="mb-2">
+                            <li>Private .env: <?php echo !empty($transportDiagnostics['private_env_readable']) ? 'readable' : 'missing or unreadable'; ?></li>
+                            <li>.env parse status: <?php echo sanitize($mailEnvironmentStatusLabels[$transportDiagnostics['environment_status'] ?? ''] ?? 'unknown'); ?></li>
+                            <li>Composer autoload: <?php echo !empty($transportDiagnostics['composer_autoload_present']) ? 'available' : 'missing'; ?></li>
+                            <li>PHPMailer: <?php echo !empty($transportDiagnostics['phpmailer_available']) ? 'available' : 'missing'; ?></li>
+                            <li>SMTP username configured: <?php echo !empty($transportDiagnostics['smtp_username_configured']) ? 'yes' : 'no'; ?></li>
+                            <li>SMTP App Password configured: <?php echo !empty($transportDiagnostics['smtp_password_configured']) ? 'yes' : 'no'; ?></li>
+                            <li>Sender address valid: <?php echo !empty($transportDiagnostics['sender_address_valid']) ? 'yes' : 'no'; ?></li>
+                            <li>Hiring notification address valid: <?php echo !empty($transportDiagnostics['notification_address_valid']) ? 'yes' : 'no'; ?></li>
+                            <li>Transport: <?php echo sanitize($mailTransportLabels[$transportDiagnostics['transport'] ?? ''] ?? 'unknown'); ?></li>
+                            <li>SMTP target: <?php echo sanitize((string) ($transportDiagnostics['smtp_host'] ?? 'unknown')); ?>:<?php echo (int) ($transportDiagnostics['smtp_port'] ?? 0); ?> / <?php echo sanitize(strtoupper((string) ($transportDiagnostics['smtp_encryption'] ?? 'unknown'))); ?></li>
+                        </ul>
+                        <small class="text-muted">Credential values and the private file path are never displayed.</small>
+                    </div>
+                </details>
+                <?php endif; ?>
             </div>
         </div>
         <?php endif; ?>
+
+        <section class="hiring-status-lookup" aria-labelledby="hiringStatusLookupTitle">
+            <div class="hiring-status-lookup-intro">
+                <span class="hiring-eyebrow">Already applied?</span>
+                <h2 id="hiringStatusLookupTitle">Check your application status</h2>
+                <p>Enter your application code and the email address you used when applying.</p>
+            </div>
+
+            <?php if ($applicationLookupError !== ''): ?>
+            <div class="alert alert-warning" role="alert"><?php echo sanitize($applicationLookupError); ?></div>
+            <?php endif; ?>
+
+            <?php if (is_array($applicationLookupResult)): ?>
+            <?php
+            $applicationStatusLabels = [
+                'submitted' => 'Application received',
+                'reviewing' => 'Under review',
+                'accepted' => 'Accepted',
+                'declined' => 'Not selected',
+            ];
+            $applicationStatusClasses = [
+                'submitted' => 'bg-primary',
+                'reviewing' => 'bg-warning text-dark',
+                'accepted' => 'bg-success',
+                'declined' => 'bg-secondary',
+            ];
+            $applicationStatus = (string) $applicationLookupResult['status'];
+            ?>
+            <div class="hiring-status-result" role="status" aria-live="polite">
+                <div>
+                    <span class="text-muted">Role</span>
+                    <strong><?php echo sanitize($applicationLookupResult['opening_title_snapshot']); ?></strong>
+                </div>
+                <div>
+                    <span class="text-muted">Status</span>
+                    <strong>
+                        <span class="badge <?php echo sanitize($applicationStatusClasses[$applicationStatus] ?? 'bg-secondary'); ?>">
+                            <?php echo sanitize($applicationStatusLabels[$applicationStatus] ?? 'Status unavailable'); ?>
+                        </span>
+                    </strong>
+                </div>
+                <div>
+                    <span class="text-muted">Last updated</span>
+                    <strong><?php echo sanitize(date('M j, Y', strtotime((string) $applicationLookupResult['updated_at']))); ?></strong>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <form method="POST" action="<?php echo APP_URL; ?>/hiring/" class="hiring-status-form">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                <input type="hidden" name="form_action" value="lookup_application">
+                <div>
+                    <label class="form-label" for="applicationStatusCode">Application code</label>
+                    <input class="form-control" id="applicationStatusCode" name="application_code"
+                           type="text" maxlength="32" autocomplete="off" autocapitalize="characters"
+                           placeholder="BOC-HR-2026-XXXXXXXXXX"
+                           value="<?php echo sanitize($applicationLookupData['code']); ?>" required>
+                </div>
+                <div>
+                    <label class="form-label" for="applicationStatusEmail">Application email</label>
+                    <input class="form-control" id="applicationStatusEmail" name="application_email"
+                           type="email" maxlength="254" autocomplete="email"
+                           value="<?php echo sanitize($applicationLookupData['email']); ?>" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Check status</button>
+            </form>
+        </section>
 
         <div class="hiring-section-heading">
             <div>
@@ -477,7 +661,7 @@ require_once __DIR__ . '/inc/header.php';
                 </div>
             </div>
             <?php else: ?>
-            <form method="POST" action="<?php echo APP_URL; ?>/hiring.php" enctype="multipart/form-data" class="hiring-form">
+            <form method="POST" action="<?php echo APP_URL; ?>/hiring/" enctype="multipart/form-data" class="hiring-form">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div class="hiring-honeypot" aria-hidden="true">
                     <label for="hiringWebsite">Website</label>

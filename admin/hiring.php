@@ -258,6 +258,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = $e->getMessage();
             }
         }
+    } elseif (($_POST['action'] ?? '') === 'delete_application') {
+        $applicationId = (int) ($_POST['application_id'] ?? 0);
+        $applicationsPage = max(1, (int) ($_POST['applications_page'] ?? 1));
+
+        if ($applicationId < 1) {
+            $errors[] = 'Choose a valid application to delete.';
+        } else {
+            try {
+                $db->beginTransaction();
+                $application = $db->fetch(
+                    "SELECT cv_storage_name
+                     FROM hiring_applications
+                     WHERE id = ?
+                     FOR UPDATE",
+                    [$applicationId]
+                );
+
+                if (!$application) {
+                    $db->rollBack();
+                    $errors[] = 'The selected application could not be found.';
+                } elseif (!preg_match('/\A[a-f0-9]{32}\.pdf\z/', (string) $application['cv_storage_name'])) {
+                    $db->rollBack();
+                    createLog('HIRING_APPLICATION_DELETE_ERROR', 'Invalid private CV filename for application #' . $applicationId);
+                    $errors[] = 'The application could not be safely deleted. Please contact support.';
+                } else {
+                    $db->delete("DELETE FROM hiring_applications WHERE id = ?", [$applicationId]);
+                    $db->commit();
+
+                    $cvPath = getHiringCvStorageDirectory() . DIRECTORY_SEPARATOR . $application['cv_storage_name'];
+                    $cvCleanupFailed = is_file($cvPath) && !unlink($cvPath);
+                    if ($cvCleanupFailed) {
+                        createLog('HIRING_APPLICATION_CV_CLEANUP_ERROR', 'Could not remove private CV for deleted application #' . $applicationId);
+                    }
+
+                    createLog('HIRING_APPLICATION_DELETED', 'Application #' . $applicationId . ' deleted');
+                    setFlashMessage(
+                        $cvCleanupFailed ? 'warning' : 'success',
+                        $cvCleanupFailed
+                            ? 'The application was deleted, but its private CV could not be removed. Please contact support.'
+                            : 'Application and its private CV deleted.'
+                    );
+                    redirect(APP_URL . '/admin/hiring.php?applications_page=' . $applicationsPage . '#applications');
+                }
+            } catch (PDOException $e) {
+                if ($db->getConnection()->inTransaction()) {
+                    $db->rollBack();
+                }
+                createLog('HIRING_APPLICATION_DELETE_ERROR', 'Database error: ' . $e->getMessage());
+                $errors[] = 'The application could not be deleted. Please try again.';
+            }
+        }
     } elseif (($_POST['action'] ?? '') === 'update_application_status') {
         $applicationId = (int) ($_POST['application_id'] ?? 0);
         $status = trim((string) ($_POST['status'] ?? ''));
@@ -494,11 +545,12 @@ require_once __DIR__ . '/inc/header.php';
                         <th>Submitted</th>
                         <th>CV</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($applications)): ?>
-                    <tr><td colspan="5" class="text-center text-muted py-4">No applications have been submitted yet.</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-4">No applications have been submitted yet.</td></tr>
                     <?php else: ?>
                     <?php foreach ($applications as $application): ?>
                     <tr>
@@ -538,6 +590,18 @@ require_once __DIR__ . '/inc/header.php';
                                     <?php endforeach; ?>
                                 </select>
                                 <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST" action=""
+                                  onsubmit="return confirmDelete('Permanently delete this application and its CV? This cannot be undone.')">
+                                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                                <input type="hidden" name="action" value="delete_application">
+                                <input type="hidden" name="application_id" value="<?php echo (int) $application['id']; ?>">
+                                <input type="hidden" name="applications_page" value="<?php echo $applicationsPage; ?>">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">
+                                    <i class="fas fa-trash-alt me-1" aria-hidden="true"></i> Delete
+                                </button>
                             </form>
                         </td>
                     </tr>

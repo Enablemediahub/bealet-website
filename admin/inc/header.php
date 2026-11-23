@@ -211,6 +211,19 @@ $faviconVersion = file_exists($faviconPath) ? (string) filemtime($faviconPath) :
             </div>
         </div>
 
+        <?php
+        $adminFlashMessage = getFlashMessage();
+        $adminFlashType = in_array($adminFlashMessage['type'] ?? '', ['success', 'danger', 'warning', 'info'], true)
+            ? $adminFlashMessage['type']
+            : 'info';
+        ?>
+        <?php if ($adminFlashMessage): ?>
+        <div class="alert alert-<?php echo $adminFlashType; ?> alert-dismissible fade show mt-3" role="status">
+            <?php echo sanitize($adminFlashMessage['message'] ?? ''); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php endif; ?>
+
     <script>
         // Sidebar toggle for mobile
         document.addEventListener('DOMContentLoaded', function() {

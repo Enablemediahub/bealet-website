@@ -148,3 +148,10 @@
 [2026-11-22 17:25:26] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #2 updated
 [2026-11-22 19:12:26] [127.0.0.1] [User: Guest] HIRING_OPENING_UPDATED: Hiring opening #4 updated
 [2026-11-22 19:13:00] [127.0.0.1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-11-23 08:38:52] [127.0.0.1] [User: Guest] HIRING_NOTIFICATION_EMAIL_ERROR: Hiring notification was not accepted by the email transport.
+[2026-11-23 08:38:52] [127.0.0.1] [User: Guest] HIRING_APPLICATION_SUBMITTED: Application BOC-HR-2026-78B231C038 for Female Receptionist
+[2026-11-23 08:42:45] [127.0.0.1] [User: 1] ADMIN_LOGIN_SUCCESS: Admin logged in
+[2026-11-23 08:51:36] [127.0.0.1] [User: Guest] HIRING_APPLICATION_STATUS_UPDATED: Application #2 set to reviewing
+[2026-11-23 09:00:41] [127.0.0.1] [User: Guest] HIRING_APPLICATION_DELETED: Application #2 deleted
+[2026-11-23 09:01:35] [127.0.0.1] [User: Guest] HIRING_APPLICATION_SUBMITTED: Application BOC-HR-2026-E2A09339F3 for Female Receptionist
+[2026-11-23 09:01:41] [127.0.0.1] [User: Guest] HIRING_APPLICATION_SUBMITTED: Application BOC-HR-2026-94AFC77E8A for Female Receptionist

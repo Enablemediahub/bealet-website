@@ -3660,11 +3660,77 @@ body.cookie-consent-visible .floating-whatsapp-button {
     background: #fff;
 }
 
+.hiring-status-lookup {
+    margin-bottom: 3rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid #dbeafe;
+    border-radius: 1.25rem;
+    background: #f8fafc;
+}
+
+.hiring-status-lookup-intro {
+    margin-bottom: 1.25rem;
+}
+
+.hiring-status-lookup-intro h2 {
+    margin: 0.4rem 0;
+    color: #0f172a;
+    font-size: clamp(1.45rem, 2.5vw, 2rem);
+}
+
+.hiring-status-lookup-intro p {
+    margin-bottom: 0;
+    color: #64748b;
+}
+
+.hiring-status-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+}
+
+.hiring-status-form .form-control {
+    min-height: 48px;
+    border-radius: 0.7rem;
+}
+
+.hiring-status-form .btn {
+    min-height: 48px;
+    white-space: nowrap;
+}
+
+.hiring-status-result {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    background: #fff;
+}
+
+.hiring-status-result > div {
+    display: grid;
+    align-content: start;
+    gap: 0.35rem;
+}
+
 @media (max-width: 767px) {
     .hiring-section-heading {
         align-items: flex-start;
         flex-direction: column;
         gap: 0.7rem;
+    }
+
+    .hiring-status-form,
+    .hiring-status-result {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hiring-status-form .btn {
+        width: 100%;
     }
 
     .hiring-role-details > div {
