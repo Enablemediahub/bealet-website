@@ -21,6 +21,10 @@ RewriteBase /bealet-website/
 
 Options -Indexes
 
+<FilesMatch "^\.env(?:\..*)?$">
+    Require all denied
+</FilesMatch>
+
 # Redirect /bealet-website/something.php to /bealet-website/something
 RewriteCond %{THE_REQUEST} \s/+bealet-website/([^\s?]+?)\.php(?:[\s?]|$) [NC]
 RewriteRule ^ /bealet-website/%1 [R=301,L]

@@ -18,5 +18,20 @@ once before deploying the updated hiring admin page.
 Images are stored under `assets/uploads/hiring`; ensure this directory is
 writable by PHP. CVs are stored outside the public web root in a
 `bealet-website-private/hiring-cvs` directory above the project folder, which
-must also be writable by PHP. Applicant confirmations use the site's existing
-PHP `mail()` setup; configure and verify mail delivery before opening a role.
+must also be writable by PHP.
+
+Applicant confirmations and new-application alerts use SMTP when credentials
+are configured in `../bealet-website-private/.env`, outside the public web root.
+Run `composer install`, then initialize the private configuration:
+
+```sh
+mkdir -p ../bealet-website-private
+cp .env.example ../bealet-website-private/.env
+chmod 600 ../bealet-website-private/.env
+```
+
+Set the Gmail sender, hiring notification inbox, and Gmail App Password there.
+For Gmail SMTP, enable 2-Step Verification and create an App Password; never
+use or commit your regular Gmail password. Without SMTP credentials, the app
+falls back to PHP `mail()`, which depends on the local or hosting mail
+transport.

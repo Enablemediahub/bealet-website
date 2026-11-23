@@ -129,3 +129,18 @@ function getHiringApplicationConfirmationTemplate($applicantName, $roleTitle, $a
         <p>Best regards,<br>" . APP_NAME . " Hiring Team</p>
     " . getEmailFooter();
 }
+
+function getHiringApplicationNotificationTemplate($applicantName, $roleTitle, $applicationCode) {
+    $safeName = htmlspecialchars($applicantName, ENT_QUOTES, 'UTF-8');
+    $safeRole = htmlspecialchars($roleTitle, ENT_QUOTES, 'UTF-8');
+    $safeCode = htmlspecialchars($applicationCode, ENT_QUOTES, 'UTF-8');
+    $adminUrl = htmlspecialchars(APP_URL . '/admin/hiring.php', ENT_QUOTES, 'UTF-8');
+
+    return getEmailHeader('New Hiring Application') . "
+        <p>A new application has been submitted to " . APP_NAME . ".</p>
+        <p><strong>Applicant:</strong> $safeName<br>
+        <strong>Role:</strong> $safeRole<br>
+        <strong>Reference:</strong> $safeCode</p>
+        <p><a href='$adminUrl' class='button'>Review Applications</a></p>
+    " . getEmailFooter();
+}

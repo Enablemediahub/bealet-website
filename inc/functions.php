@@ -3,6 +3,18 @@
  * Bealet Website - Helper Functions
  */
 
+$projectRoot = dirname(__DIR__);
+$composerAutoload = $projectRoot . '/vendor/autoload.php';
+if (is_file($composerAutoload)) {
+    require_once $composerAutoload;
+    if (class_exists(\Dotenv\Dotenv::class)) {
+        $envFile = getenv('BEALET_ENV_FILE') ?: dirname($projectRoot) . '/bealet-website-private/.env';
+        if (is_file($envFile)) {
+            \Dotenv\Dotenv::createImmutable(dirname($envFile), basename($envFile))->safeLoad();
+        }
+    }
+}
+
 /**
  * Generate CSRF Token
  */
@@ -502,10 +514,75 @@ function getFlashMessage() {
 /**
  * Send Email
  */
+function getMailSetting($key, $default = '') {
+    $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+    if ($value === false || $value === null || trim((string) $value) === '') {
+        return $default;
+    }
+
+    return trim((string) $value);
+}
+
 function sendEmail($to, $subject, $body, $isHtml = true) {
+    $username = getMailSetting('MAIL_USERNAME');
+    $password = getMailSetting('MAIL_PASSWORD');
+    $fromEmail = getMailSetting('MAIL_FROM', defined('MAIL_FROM') ? MAIL_FROM : '');
+    $fromName = getMailSetting('MAIL_FROM_NAME', defined('APP_NAME') ? APP_NAME : '');
+
+    if (($username === '') !== ($password === '')) {
+        error_log('Email send failed: SMTP username and password must both be configured.');
+        return false;
+    }
+
+    if ($username !== '') {
+        if (!class_exists(\PHPMailer\PHPMailer\PHPMailer::class)) {
+            error_log('Email send failed: PHPMailer is unavailable. Run Composer install.');
+            return false;
+        }
+
+        $host = getMailSetting('MAIL_HOST', defined('MAIL_HOST') ? MAIL_HOST : 'smtp.gmail.com');
+        $port = (int) getMailSetting('MAIL_PORT', defined('MAIL_PORT') ? (string) MAIL_PORT : '587');
+        $encryption = strtolower(getMailSetting('MAIL_ENCRYPTION', defined('MAIL_ENCRYPTION') ? MAIL_ENCRYPTION : 'tls'));
+
+        if ($host === '' || $port < 1 || !filter_var($fromEmail, FILTER_VALIDATE_EMAIL)) {
+            error_log('Email send failed: SMTP host, port, or sender address is invalid.');
+            return false;
+        }
+
+        try {
+            $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $mailer->isSMTP();
+            $mailer->Host = $host;
+            $mailer->SMTPAuth = true;
+            $mailer->Username = $username;
+            $mailer->Password = $password;
+            $mailer->Port = $port;
+            $mailer->CharSet = 'UTF-8';
+            $mailer->isHTML($isHtml);
+            $mailer->setFrom($fromEmail, $fromName);
+            $mailer->addAddress($to);
+            $mailer->Subject = $subject;
+            $mailer->Body = $body;
+
+            if ($encryption === 'tls') {
+                $mailer->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($encryption === 'ssl') {
+                $mailer->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                error_log('Email send failed: SMTP encryption must be tls or ssl.');
+                return false;
+            }
+
+            return $mailer->send();
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            error_log('SMTP email send failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type: " . ($isHtml ? "text/html" : "text/plain") . "; charset=UTF-8" . "\r\n";
-    $headers .= 'From: ' . MAIL_FROM . "\r\n";
+    $headers .= 'From: ' . $fromEmail . "\r\n";
     
     $result = mail($to, $subject, $body, $headers);
     

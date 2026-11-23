@@ -496,3 +496,13 @@ Stack trace:
   thrown in Command line code on line 1
 [22-Nov-2026 13:17:18 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 513
 [22-Nov-2026 13:17:18 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 514
+[23-Nov-2026 07:50:24 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 672
+[23-Nov-2026 07:50:24 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 673
+[23-Nov-2026 07:50:24 Africa/Accra] Email send failed: SMTP username and password must both be configured.
+[23-Nov-2026 07:54:01 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 675
+[23-Nov-2026 07:54:01 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 676
+[23-Nov-2026 07:55:04 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 675
+[23-Nov-2026 07:55:04 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 676
+[23-Nov-2026 07:55:04 Africa/Accra] Email send failed: SMTP username and password must both be configured.
+[23-Nov-2026 07:56:12 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 675
+[23-Nov-2026 07:56:12 Africa/Accra] PHP Deprecated:  The predefined locally scoped $http_response_header variable is deprecated, call http_get_last_response_headers() instead in /Users/mindsurgeon/Herd/bealet-website/inc/functions.php on line 676

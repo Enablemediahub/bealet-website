@@ -1,0 +1,7 @@
+/.env*
+!/.env.example
+/vendor/
+/.DS_Store
+**/.DS_Store
+/logs/*.log
+/tmp/sessions/*

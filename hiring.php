@@ -215,6 +215,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 createLog('HIRING_CONFIRMATION_EMAIL_ERROR', $e->getMessage());
             }
 
+            $hiringNotificationEmail = getMailSetting('HIRING_NOTIFICATION_EMAIL');
+            $hiringNotificationSent = false;
+            if ($hiringNotificationEmail === '' || !filter_var($hiringNotificationEmail, FILTER_VALIDATE_EMAIL)) {
+                createLog('HIRING_NOTIFICATION_EMAIL_ERROR', 'Hiring notification email is not configured.');
+            } else {
+                try {
+                    $hiringNotificationSent = sendEmail(
+                        $hiringNotificationEmail,
+                        'New hiring application - ' . APP_NAME,
+                        getHiringApplicationNotificationTemplate(
+                            $formData['name'],
+                            (string) $opening['title'],
+                            $applicationCode
+                        )
+                    );
+                    if (!$hiringNotificationSent) {
+                        createLog('HIRING_NOTIFICATION_EMAIL_ERROR', 'Hiring notification was not accepted by the email transport.');
+                    }
+                } catch (Throwable $e) {
+                    createLog('HIRING_NOTIFICATION_EMAIL_ERROR', $e->getMessage());
+                }
+            }
+
             createLog(
                 'HIRING_APPLICATION_SUBMITTED',
                 'Application ' . $applicationCode . ' for ' . (string) $opening['title']
